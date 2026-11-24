@@ -1,0 +1,11 @@
+.env
+.env.example
+.freebuff/
+internship_agent/
+internverse-web/internverse-web/
+requirements.txt
+run_agent.py
+supabase_setup.sql
+*.c
+*.exe
+__pycache__/

@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>internVerse — Find Your Perfect Internship</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="shortcut icon" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0a0a1a;--bg2:#111827;--card:rgba(255,255,255,0.04);--card2:rgba(255,255,255,0.07);
+    --bdr:rgba(255,255,255,0.08);--bdr2:rgba(99,102,241,0.5);
+    --t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;
+    --ac:#6366f1;--acl:#818cf8;--glo:rgba(99,102,241,0.3);
+    --grn:#22c55e;--grn2:#4ade80;--yel:#eab308;--org:#f97316;--red:#ef4444;--cyn:#06b6d4;--pnk:#ec4899;
+    --rad:16px;--rad2:10px;--rad3:6px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden}
+.container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+
+/* Hero */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(99,102,241,0.15),transparent),radial-gradient(ellipse 60% 50% at 80% 50%,rgba(6,182,212,0.08),transparent),radial-gradient(ellipse 60% 50% at 20% 80%,rgba(236,72,153,0.06),transparent);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:700px}
+.logo{display:inline-flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.logo-icon{font-size:2.5rem}
+.logo-text{font-size:2rem;font-weight:800;letter-spacing:-.5px}
+.logo-accent{color:var(--acl)}
+.brand-logo-img{width:32px;height:32px;border-radius:8px;object-fit:cover;box-shadow:0 4px 12px rgba(99,102,241,0.35);vertical-align:middle}
+.hero-logo-img{width:64px;height:64px;border-radius:16px;object-fit:cover;box-shadow:0 10px 28px rgba(99,102,241,0.45);border:1px solid rgba(255,255,255,0.18);animation:floatLogo 4s ease-in-out infinite}
+@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:800;line-height:1.1;margin-bottom:1.2rem;letter-spacing:-1.5px}
+.gradient-text{background:linear-gradient(135deg,var(--acl),var(--cyn),var(--pnk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.15rem;color:var(--t2);max-width:550px;margin:0 auto 2rem;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;align-items:center}
+.stat-n{font-size:2rem;font-weight:800;color:var(--acl)}
+.stat-l{font-size:.85rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+
+/* Buttons */
+.btn-p{display:inline-flex;align-items:center;gap:.5rem;padding:.9rem 2rem;background:linear-gradient(135deg,var(--ac),#4f46e5);color:#fff;border:none;border-radius:var(--rad2);font-size:1rem;font-weight:600;cursor:pointer;transition:.25s;font-family:inherit}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 25px var(--glo)}
+.btn-glow{box-shadow:0 4px 20px var(--glo);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 4px 20px var(--glo)}50%{box-shadow:0 4px 35px rgba(99,102,241,0.5)}}
+.btn-arrow{transition:transform .2s}.btn-p:hover .btn-arrow{transform:translateX(4px)}
+.btn-s{display:inline-flex;align-items:center;gap:.5rem;padding:.9rem 2rem;background:var(--card);color:var(--t1);border:1px solid var(--bdr);border-radius:var(--rad2);font-size:1rem;font-weight:600;cursor:pointer;transition:.25s;font-family:inherit}
+.btn-s:hover{background:var(--card2);border-color:var(--bdr2)}
+.btn-lg{padding:1.1rem 2.5rem;font-size:1.1rem}
+.btn-sm{padding:.5rem 1rem;background:var(--ac);color:#fff;border:none;border-radius:var(--rad3);font-size:.85rem;font-weight:600;cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap}
+.btn-sm:hover{background:var(--acl)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Sections */
+.form-sec{padding:4rem 0 6rem}
+.sec-hdr{text-align:center;margin-bottom:2.5rem}
+.badge{display:inline-block;padding:.35rem 1rem;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:100px;font-size:.85rem;font-weight:600;color:var(--acl);margin-bottom:1rem}
+.badge-g{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.2);color:var(--grn2)}
+.sec-hdr h2{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:.5rem}
+.sec-hdr p{color:var(--t2);font-size:1.05rem}
+
+/* Glass Card */
+.glass{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad);padding:2.5rem;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+
+/* Form */
+.fg-sec{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--bdr)}
+.fg-sec:last-of-type{border-bottom:none}
+.fg-title{font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.sec-ico{font-size:1.3rem}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:.85rem;font-weight:600;color:var(--t2);margin-bottom:.4rem}
+.req{color:var(--red)}.opt{color:var(--t3);font-weight:400;font-size:.8rem}
+.fg input,.fg select{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--bdr);border-radius:var(--rad3);color:var(--t1);font-size:.95rem;font-family:inherit;transition:.25s;outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--bdr2);box-shadow:0 0 0 3px var(--glo)}
+.fg input::placeholder{color:var(--t3)}
+.fg select option,.fg select optgroup{background:#1a1a2e;color:var(--t1)}
+.f-hint{font-size:.85rem;color:var(--t3);margin-bottom:.8rem}
+.cgpa-hint{font-size:.8rem;margin-top:.3rem;color:var(--t3)}
+
+/* Skills */
+.skills-grid{display:flex;flex-wrap:wrap;gap:.5rem}
+.skills-ph{width:100%;padding:1.5rem;text-align:center;color:var(--t3);border:2px dashed var(--bdr);border-radius:var(--rad2);font-size:.9rem}
+.sk{display:inline-flex;align-items:center;gap:.3rem;padding:.45rem .9rem;background:rgba(255,255,255,0.05);border:1px solid var(--bdr);border-radius:100px;font-size:.85rem;cursor:pointer;transition:.25s;user-select:none}
+.sk:hover{background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3)}
+.sk.sel{background:rgba(99,102,241,0.15);border-color:var(--ac);color:var(--acl)}
+.sk .ck{font-size:.75rem;opacity:0;transition:.25s}.sk.sel .ck{opacity:1}
+.sk-row{display:flex;gap:.5rem}.sk-row input{flex:1}
+.sel-sk{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;min-height:.5rem}
+.sel-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .7rem;background:var(--ac);color:#fff;border-radius:100px;font-size:.8rem;font-weight:600}
+.sel-tag .rm{cursor:pointer;opacity:.7;font-size:.9rem}.sel-tag .rm:hover{opacity:1}
+
+/* Checkbox */
+.chk-lbl{display:flex;align-items:center;gap:.7rem;cursor:pointer;font-size:.95rem;font-weight:500;user-select:none}
+.chk-lbl input[type="checkbox"]{width:18px;height:18px;accent-color:var(--ac);cursor:pointer}
+
+/* Submit */
+.f-submit{text-align:center;margin-top:1.5rem}
+.f-disc{font-size:.8rem;color:var(--t3);margin-top:.8rem}
+
+/* Results */
+.res-sec{padding:4rem 0 6rem;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Overview */
+.res-ov{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem}
+.ov-stat{text-align:center;padding:1rem}
+.ov-stat .big{font-size:2.2rem;font-weight:800;color:var(--acl)}
+.ov-stat .lbl{font-size:.8rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+
+/* Match Cards */
+.matches{display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem}
+.mc{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad);padding:1.5rem 2rem;transition:.25s;cursor:pointer;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px}
+.mc.sc::before{background:var(--grn)}.mc.sg::before{background:var(--yel)}.mc.sf::before{background:var(--org)}.mc.sl::before{background:var(--red)}
+.mc:hover{background:var(--card2);border-color:rgba(99,102,241,0.2);transform:translateX(4px)}
+.mc-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.8rem}
+.mc-hdr-l h3{font-size:1.15rem;font-weight:700;margin-bottom:.2rem}
+.mc-co{color:var(--acl);font-size:.9rem;font-weight:600}
+.mc-hdr-r{text-align:right;flex-shrink:0}
+.mc-scr{font-size:1.8rem;font-weight:800}
+.mc-scr.sc{color:var(--grn)}.mc-scr.sg{color:var(--yel)}.mc-scr.sf{color:var(--org)}.mc-scr.sl{color:var(--red)}
+.mc-lbl{font-size:.75rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.mc-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.8rem;font-size:.85rem;color:var(--t2)}
+.mc-meta span{display:flex;align-items:center;gap:.3rem}
+.mc-desc{font-size:.9rem;color:var(--t2);margin-bottom:.8rem;line-height:1.5}
+.mc-skills{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem}
+.stag{padding:.2rem .6rem;border-radius:100px;font-size:.75rem;font-weight:600}
+.stag.rq{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:var(--acl)}
+.stag.pf{background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);color:var(--cyn)}
+.mc-reasons{margin-top:.6rem;font-size:.85rem}
+.mc-reasons .r{color:var(--grn2);padding:.15rem 0}
+.mc-reasons .w{color:var(--yel);padding:.15rem 0}
+.mc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--bdr)}
+.mc-url{font-size:.8rem;color:var(--acl);text-decoration:underline;text-decoration-style:dotted}
+.mc-elig{font-size:.75rem;color:var(--t3)}
+
+/* Score bar */
+.sb-wrap{margin-top:.5rem}
+.sb{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.sb-fill.sc{background:linear-gradient(90deg,var(--grn),var(--grn2))}.sb-fill.sg{background:linear-gradient(90deg,var(--yel),#facc15)}.sb-fill.sf{background:linear-gradient(90deg,var(--org),#fb923c)}.sb-fill.sl{background:linear-gradient(90deg,var(--red),#f87171)}
+
+/* Expand */
+.mc-det{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.mc.exp .mc-det{max-height:500px}
+.exp-hint{font-size:.75rem;color:var(--t3);text-align:center;margin-top:.5rem}
+.mc.exp .exp-hint{display:none}
+
+/* Tips */
+.tips{margin-bottom:2rem}.tips h3{font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+.tip{display:flex;align-items:flex-start;gap:.5rem;padding:.5rem 0;font-size:.9rem;color:var(--t2)}
+.tip.warn{color:var(--yel)}
+.tip-ico{flex-shrink:0;font-size:1rem}
+
+/* Actions */
+.res-act{display:flex;justify-content:center;gap:1rem;margin-top:1rem}
+
+/* Footer */
+.footer{padding:3rem 0;text-align:center;border-top:1px solid var(--bdr)}
+.footer p{color:var(--t3);font-size:.9rem;margin-top:.5rem}
+.footer-disc{font-size:.75rem !important;margin-top:1rem !important}
+.logo-sm{font-size:1.2rem;font-weight:700}
+
+/* Responsive */
+@media(max-width:768px){.f-row{grid-template-columns:1fr}.hero h1{font-size:2rem}.hero-stats{gap:1.5rem}.glass{padding:1.5rem}.mc-hdr{flex-direction:column}.mc-hdr-r{text-align:left}.res-act{flex-direction:column;align-items:center}.mc-meta{flex-direction:column;gap:.3rem}}
+@media(max-width:480px){.hero h1{font-size:1.7rem}.hero-sub{font-size:1rem}.stat-n{font-size:1.5rem}.sec-hdr h2{font-size:1.6rem}.mc{padding:1rem 1.2rem}}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+
+/* Email Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);width:100%;max-width:700px;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 2rem;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--bg2);z-index:1}
+.modal-head h3{font-size:1.1rem;font-weight:700}
+.modal-close{background:none;border:none;color:var(--t2);font-size:1.5rem;cursor:pointer;padding:.2rem .5rem;border-radius:var(--rad3);transition:.2s}
+.modal-close:hover{background:var(--card);color:var(--t1)}
+.modal-body{padding:2rem}
+.email-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.email-tab{padding:.5rem 1rem;border:1px solid var(--bdr);border-radius:var(--rad3);background:var(--card);color:var(--t2);font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+.email-tab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.email-tab:hover:not(.active){border-color:var(--bdr2);color:var(--t1)}
+.email-preview{background:rgba(255,255,255,0.03);border:1px solid var(--bdr);border-radius:var(--rad2);padding:1.5rem;min-height:300px;font-size:.9rem;line-height:1.7;color:var(--t2);white-space:pre-wrap;font-family:'Inter',sans-serif}
+.email-preview .highlight{color:var(--acl);font-weight:600}
+.email-actions{display:flex;gap:.8rem;margin-top:1.5rem;flex-wrap:wrap}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:.7rem 1.5rem;border-radius:var(--rad2);font-size:.9rem;font-weight:600;z-index:2000;animation:toastIn .3s ease;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Resume Modal */
+.resume-section{margin-bottom:1.2rem}
+.resume-section h4{font-size:.9rem;font-weight:700;color:var(--acl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.resume-bullet{display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;font-size:.88rem;color:var(--t2);line-height:1.5}
+.resume-bullet::before{content:'▸';color:var(--ac);font-weight:700;flex-shrink:0;margin-top:1px}
+.cover-letter{font-size:.9rem;line-height:1.8;color:var(--t2);white-space:pre-wrap}
+.cover-letter .cl-name{color:var(--acl);font-weight:700}
+.cover-letter .cl-company{color:var(--cyn);font-weight:700}
+.cover-letter .cl-role{color:var(--pnk);font-weight:700}
+.skill-match-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0}
+.skill-match-item{display:flex;align-items:center;gap:.4rem;font-size:.82rem;padding:.3rem .6rem;border-radius:var(--rad3);background:rgba(255,255,255,0.03);border:1px solid var(--bdr)}
+.skill-match-item.have{border-color:rgba(34,197,94,0.3);color:var(--grn2)}
+.skill-match-item.miss{border-color:rgba(234,179,8,0.3);color:var(--yel)}
+.skill-match-item .sm-icon{font-size:.7rem}
+.rl-tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.rl-tab{padding:.45rem .9rem;border:1px solid var(--bdr);border-radius:var(--rad3);background:var(--card);color:var(--t2);font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+.rl-tab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.rl-tab:hover:not(.active){border-color:var(--bdr2);color:var(--t1)}
+
+/* Agent Dashboard */
+.agent-bar{display:flex;align-items:center;gap:1rem;padding:1rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(6,182,212,0.05));border:1px solid rgba(99,102,241,0.15);border-radius:var(--rad);margin-bottom:1.5rem}
+.agent-status{display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:.9rem}
+.agent-dot{width:10px;height:10px;border-radius:50%;background:var(--grn);animation:blink 1.5s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.agent-stats{display:flex;gap:1.5rem;margin-left:auto}
+.agent-stat{text-align:center}
+.agent-stat .num{font-size:1.3rem;font-weight:800;color:var(--acl)}
+.agent-stat .lbl{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+
+/* Timeline */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--bdr)}
+.tl-item{position:relative;margin-bottom:1.5rem;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad2);transition:.3s}
+.tl-item.active{border-color:rgba(99,102,241,0.3);box-shadow:0 0 20px rgba(99,102,241,0.1)}
+.tl-item.done{border-color:rgba(34,197,94,0.3)}
+.tl-item.response{border-color:rgba(34,197,94,0.5);background:rgba(34,197,94,0.05);animation:pulse-green 2s ease infinite}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.2)}50%{box-shadow:0 0 20px 4px rgba(34,197,94,0.15)}}
+.tl-dot{position:absolute;left:-2rem;top:1rem;width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.6rem}
+.tl-item.done .tl-dot{background:var(--grn);border-color:var(--grn);color:#fff}
+.tl-item.active .tl-dot{background:var(--ac);border-color:var(--ac);color:#fff;animation:pulse-dot 1.5s ease infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0.4)}50%{box-shadow:0 0 0 6px rgba(99,102,241,0)}}
+.tl-co{font-weight:700;font-size:1rem;margin-bottom:.2rem}
+.tl-role{color:var(--acl);font-size:.85rem;margin-bottom:.4rem}
+.tl-msg{font-size:.82rem;color:var(--t2);line-height:1.5}
+.tl-time{font-size:.72rem;color:var(--t3);margin-top:.3rem}
+
+/* Call Ready Card */
+.call-ready{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(6,182,212,0.05));border:1px solid rgba(34,197,94,0.2);border-radius:var(--rad);padding:2rem;margin-top:1.5rem}
+.call-ready h3{font-size:1.2rem;font-weight:800;margin-bottom:1rem;color:var(--grn2)}
+.call-checklist{list-style:none;padding:0}
+.call-checklist li{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;font-size:.9rem;color:var(--t2);border-bottom:1px solid var(--bdr)}
+.call-checklist li:last-child{border-bottom:none}
+.call-checklist .ck{font-size:1.1rem}
+.call-company-banner{display:flex;align-items:center;gap:1rem;padding:1.2rem;background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad2);margin-bottom:1.5rem}
+.call-company-banner .co-name{font-size:1.3rem;font-weight:800}
+.call-company-banner .co-role{color:var(--acl);font-size:.95rem}
+
+/* Notification Badge */
+.notif-badge{position:fixed;top:1rem;right:1rem;background:var(--grn);color:#fff;padding:.6rem 1.2rem;border-radius:var(--rad2);font-size:.85rem;font-weight:600;z-index:3000;animation:slideInRight .4s ease;display:none;box-shadow:0 4px 20px rgba(34,197,94,0.3)}
+@keyframes slideInRight{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:translateX(0)}}
+.notif-badge .notif-icon{margin-right:.3rem}
+
+/* WhatsApp */
+.wa-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.8rem 1.8rem;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:var(--rad2);font-size:1rem;font-weight:700;cursor:pointer;transition:.25s;font-family:inherit;margin-top:1rem;box-shadow:0 4px 15px rgba(37,211,102,0.3)}
+.wa-btn:hover{transform:translateY(-2px);box-shadow:0 6px 25px rgba(37,211,102,0.4)}
+.wa-btn svg{width:22px;height:22px;fill:#fff}
+.wa-msg-preview{background:rgba(37,211,102,0.05);border:1px solid rgba(37,211,102,0.2);border-radius:var(--rad2);padding:1.2rem;margin-top:1rem;font-size:.85rem;line-height:1.7;color:var(--t2);white-space:pre-wrap;font-family:'Inter',sans-serif}
+.wa-msg-preview .wa-highlight{color:#25d366;font-weight:700}
+.wa-section{margin-top:1.5rem;padding:1.5rem;background:linear-gradient(135deg,rgba(37,211,102,0.05),rgba(18,140,126,0.03));border:1px solid rgba(37,211,102,0.15);border-radius:var(--rad)}
+.wa-section h3{font-size:1.1rem;font-weight:700;margin-bottom:.8rem;color:#25d366}
+
+/* Top Navbar & Auth Modal & Browse Section */
+.top-nav{position:sticky;top:0;z-index:200;background:rgba(10,10,26,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr)}
+.top-nav-inner{max-width:1040px;margin:0 auto;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-brand{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:.45rem;color:var(--t1);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:1.25rem}
+.nav-links a{color:var(--t2);font-size:.86rem;font-weight:600;text-decoration:none;transition:.2s}
+.nav-links a:hover{color:var(--t1)}
+.nav-auth{display:flex;align-items:center;gap:.6rem}
+.btn-nav{padding:.48rem .95rem;border-radius:var(--rad3);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--bdr);background:var(--card);color:var(--t1);text-decoration:none;transition:.2s}
+.btn-nav.primary{background:linear-gradient(135deg,var(--ac),#4f46e5);border-color:transparent;color:#fff}
+.btn-nav.primary:hover{box-shadow:0 4px 16px var(--glo)}
+.user-chip{display:inline-flex;align-items:center;gap:.5rem;padding:.3rem .75rem .3rem .35rem;background:var(--card2);border:1px solid var(--bdr);border-radius:100px;font-size:.82rem;font-weight:600}
+.user-chip-av{width:26px;height:26px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;overflow:hidden}
+.user-chip-av img{width:100%;height:100%;object-fit:cover}
+.hero-ctas{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.2rem}
+.btn-outline{padding:.9rem 1.6rem;background:var(--card);color:var(--t1);border:1px solid var(--bdr);border-radius:var(--rad2);font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:.2s;font-family:inherit}
+.btn-outline:hover{border-color:var(--bdr2);background:var(--card2)}
+.browse-sec{padding:4rem 0;border-top:1px solid var(--bdr)}
+.browse-controls{display:grid;grid-template-columns:1fr auto auto;gap:.75rem;margin-bottom:1.25rem}
+.browse-controls input,.browse-controls select{padding:.75rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--bdr);border-radius:var(--rad3);color:var(--t1);font-size:.9rem;font-family:inherit;outline:none}
+.browse-controls select option{background:#1a1a2e}
+.browse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+.b-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad2);padding:1.15rem;display:flex;flex-direction:column;gap:.5rem;transition:.2s}
+.b-card:hover{border-color:var(--bdr2);transform:translateY(-2px)}
+.b-card-co{font-size:.8rem;font-weight:700;color:var(--acl);text-transform:uppercase;letter-spacing:.04em}
+.b-card-ti{font-size:1rem;font-weight:700}
+.b-card-meta{font-size:.78rem;color:var(--t2)}
+.b-card-desc{font-size:.8rem;color:var(--t3);flex:1}
+.b-card-act{display:flex;gap:.5rem;margin-top:.4rem}
+.b-btn{padding:.42rem .8rem;border-radius:var(--rad3);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;border:1px solid var(--bdr);background:var(--card2);color:var(--t1);font-family:inherit}
+.b-btn.primary{background:var(--ac);border-color:transparent;color:#fff}
+.auth-tabs-w{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;background:rgba(255,255,255,0.04);padding:.3rem;border-radius:var(--rad2);border:1px solid var(--bdr);margin-bottom:1rem}
+.auth-tab-w{padding:.5rem;border:none;background:transparent;color:var(--t2);font-weight:600;font-size:.82rem;border-radius:var(--rad3);cursor:pointer;font-family:inherit}
+.auth-tab-w.active{background:var(--ac);color:#fff}
+.btn-google-w{width:100%;display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.78rem 1rem;background:#fff;color:#0f172a;border:none;border-radius:var(--rad2);font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-google-w:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,255,255,0.2)}
+.web-msg{padding:.6rem .8rem;border-radius:var(--rad3);font-size:.82rem;margin-bottom:.8rem;display:none}
+.web-msg.err{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#fca5a5}
+.web-msg.ok{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35);color:#86efac}
+.pass-wrap{position:relative;display:flex;align-items:center}
+.pass-wrap input{padding-right:2.8rem}
+.pass-toggle{position:absolute;right:.65rem;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1rem;padding:.25rem;border-radius:4px;transition:.15s}
+.pass-toggle:hover{color:var(--t1)}
+.sub-tabs-w{display:flex;gap:.5rem;margin-bottom:.8rem}
+.sub-tab-w{padding:.35rem .75rem;border-radius:100px;font-size:.78rem;font-weight:600;border:1px solid var(--bdr);background:transparent;color:var(--t2);cursor:pointer}
+.sub-tab-w.active{background:rgba(99,102,241,0.2);border-color:var(--ac);color:var(--acl)}
+@media(max-width:700px){.nav-links{display:none}.browse-controls{grid-template-columns:1fr}}
+
+/* ══════════════════════════════════════════════════════
+   ADVANCED 3D ANIMATION & MOTION DESIGN ENGINE
+   ══════════════════════════════════════════════════════ */
+/* Cursor Ambient Glow */
+.cursor-glow {
+    position: fixed;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(99,102,241,0.14) 0%, rgba(6,182,212,0.07) 35%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    mix-blend-mode: screen;
+    transition: opacity 0.3s ease;
+    will-change: left, top;
+}
+@media (pointer: coarse) {
+    .cursor-glow { display: none !important; }
+}
+
+/* 3D Canvas in Hero */
+.hero-3d-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ambient Glowing Orbs */
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(85px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+    animation: orbFloat 9s ease-in-out infinite alternate;
+}
+.orb-1 { width: 360px; height: 360px; background: rgba(99,102,241,0.35); top: -60px; left: 15%; }
+.orb-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.28); top: 35%; right: 10%; animation-delay: -3.5s; }
+.orb-3 { width: 300px; height: 300px; background: rgba(236,72,153,0.2); bottom: -40px; left: 38%; animation-delay: -6s; }
+
+@keyframes orbFloat {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(30px, -25px, 0) scale(1.08); }
+    100% { transform: translate3d(-20px, 35px, 0) scale(0.95); }
+}
+
+/* Floating 3D Pills / Badges */
+.floating-badge {
+    position: absolute;
+    padding: .45rem .95rem;
+    border-radius: 100px;
+    background: rgba(15,23,42,0.78);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(14px);
+    font-size: .78rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    pointer-events: none;
+    z-index: 2;
+    animation: badgeFloat 6s ease-in-out infinite alternate;
+}
+.floating-badge span { color: var(--acl); }
+.badge-top-left { top: 14%; left: -25px; animation-duration: 5.5s; }
+.badge-top-right { top: 18%; right: -25px; animation-duration: 6.5s; animation-delay: -1.5s; }
+.badge-bot-left { bottom: 22%; left: -15px; animation-duration: 7s; animation-delay: -3s; }
+.badge-bot-right { bottom: 18%; right: -20px; animation-duration: 6s; animation-delay: -4.5s; }
+
+@media(max-width:850px){
+    .floating-badge { display: none; }
+}
+
+@keyframes badgeFloat {
+    0% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-14px) rotate(1.5deg); }
+    100% { transform: translateY(4px) rotate(-1deg); }
+}
+
+/* 3D Perspective Card Tilt */
+.card-3d-tilt {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s ease;
+    will-change: transform;
+}
+.card-3d-tilt::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle 280px at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255,255,255,0.12), transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.card-3d-tilt:hover::after {
+    opacity: 1;
+}
+
+/* Enhanced Buttons with Shimmer & Ripple */
+.btn-p {
+    position: relative;
+    overflow: hidden;
+    background-size: 200% auto;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-p:hover {
+    background-position: right center;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(99,102,241,0.55);
+}
+.btn-p:active {
+    transform: translateY(-1px) scale(0.99);
+}
+.btn-s {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-s:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnim 0.6s linear;
+    background-color: rgba(255,255,255,0.3);
+    pointer-events: none;
+}
+@keyframes rippleAnim {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Scroll Reveal */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-on-scroll.is-revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* 3D Glowing Animated Border */
+.border-glow-animated {
+    position: relative;
+}
+.border-glow-animated::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: calc(var(--rad) + 1.5px);
+    background: linear-gradient(135deg, var(--ac), var(--cyn), var(--pnk), var(--ac));
+    background-size: 300% 300%;
+    animation: borderRotate 6s linear infinite;
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(2px);
+}
+@keyframes borderRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animated Gradient Headline */
+.hero h1 .gradient-text {
+    background: linear-gradient(135deg, #a5b4fc 0%, #38bdf8 30%, #ec4899 65%, #a5b4fc 100%);
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmerHeadline 7s ease-in-out infinite alternate;
+}
+@keyframes shimmerHeadline {
+    0% { background-position: 0% center; }
+    100% { background-position: 100% center; }
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        transition-duration: 0.001s !important;
+    }
+    .hero-3d-canvas { display: none !important; }
+    .cursor-glow { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="#hero" class="nav-brand"><img src="logo.png" alt="internVerse" class="brand-logo-img"><span>intern<span class="logo-accent">Verse</span></span></a>
+        <div class="nav-links">
+            <a href="#formSection">Smart Matcher</a>
+            <a href="#browseSection">Browse Internships</a>
+            <a href="app.html#recruiter" onclick="localStorage.setItem('iv_goto_screen','recruiterScreen')">💬 Recruiter AI</a>
+            <a href="app.html#email" onclick="localStorage.setItem('iv_goto_screen','emailPitchScreen')">✉️ Cold Pitch</a>
+            <a href="app.html#portfolio" onclick="localStorage.setItem('iv_goto_screen','portfolioScreen')">🎨 Portfolio</a>
+            <a href="app.html" style="padding:.25rem .75rem;background:rgba(99,102,241,0.22);border:1px solid rgba(99,102,241,0.4);border-radius:100px;color:var(--acl);font-weight:700">🖥️ Desktop Portal</a>
+        </div>
+        <div class="nav-auth" id="webNavAuth">
+            <button type="button" class="btn-nav primary" onclick="openWebAuthModal()">Sign In</button>
+            <a href="app.html" class="btn-nav">Candidate Portal</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero" id="hero">
+    <div class="hero-bg">
+        <canvas id="hero3DCanvas" class="hero-3d-canvas"></canvas>
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+        <!-- Floating 3D Tech Badges -->
+        <div class="floating-badge badge-top-left"><span>✦</span> AI Match Algorithm</div>
+        <div class="floating-badge badge-top-right"><span>⚡</span> 1-Click WhatsApp Offer</div>
+        <div class="floating-badge badge-bot-left"><span>🏢</span> 160+ Leading Companies</div>
+        <div class="floating-badge badge-bot-right"><span>🎨</span> Live 3D Portfolio</div>
+
+        <div class="logo card-3d-tilt"><img src="logo.png" alt="internVerse" class="hero-logo-img"><span class="logo-text">intern<span class="logo-accent">Verse</span></span></div>
+        <h1>Find Your Perfect <span class="gradient-text">Internship</span></h1>
+        <p class="hero-sub">Smart matching for <strong>all academic streams</strong> — CS, Mechanical, Commerce, Arts, and more. Sign in with <strong>Google</strong> or <strong>Mobile OTP</strong> to save matches and track applications in the cloud.</p>
+        <div class="hero-ctas">
+            <button class="btn-p btn-glow" onclick="document.getElementById('formSection').scrollIntoView({behavior:'smooth'})">Get Started — It's Free <span class="btn-arrow">→</span></button>
+            <a href="app.html" class="btn-s" style="border-color:var(--bdr2)">🖥️ Open Desktop Workspace</a>
+            <a href="#browseSection" class="btn-outline">🔎 Browse All Roles</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat"><span class="stat-n" data-target="80">0</span><span class="stat-l">Companies</span></div>
+            <div class="stat"><span class="stat-n" data-target="70">0</span><span class="stat-l">Streams</span></div>
+            <div class="stat"><span class="stat-n" id="heroIntCount" data-target="135">0</span><span class="stat-l">Internships</span></div>
+        </div>
+    </div>
+</header>
+
+<!-- ═══ FORM ═══ -->
+<main>
+<section class="form-sec" id="formSection">
+    <div class="container">
+        <div class="sec-hdr reveal-on-scroll">
+            <span class="badge">📝 Step 1</span>
+            <h2>Tell Us About You</h2>
+            <p>Fill in your basic details. We'll match you with the best internships in seconds.</p>
+        </div>
+        <form id="profileForm" class="glass card-3d-tilt reveal-on-scroll" autocomplete="off">
+            <div class="fg-sec">
+                <h3 class="fg-title"><span class="sec-ico">👤</span> Basic Information</h3>
+                <div class="f-row">
+                    <div class="fg"><label for="name">Full Name <span class="req">*</span></label><input type="text" id="name" placeholder="e.g. Priya Sharma" required></div>
+                    <div class="fg"><label for="email">Email Address <span class="req">*</span></label><input type="email" id="email" placeholder="e.g. priya@college.edu" required></div>
+                </div>
+                <div class="fg"><label for="phone">Phone <span class="opt">(optional)</span></label><input type="tel" id="phone" placeholder="e.g. +91 98765 43210"></div>
+            </div>
+            <div class="fg-sec">
+                <h3 class="fg-title"><span class="sec-ico">🎓</span> Education</h3>
+                <div class="fg"><label for="stream">Your Stream <span class="req">*</span></label>
+                    <select id="stream" required>
+                        <option value="" disabled selected>Select your stream...</option>
+                        <optgroup label="Engineering">
+                            <option value="CS/IT">CS / IT</option><option value="Electronics">Electronics / ECE</option><option value="Electrical">Electrical / EEE</option><option value="Mechanical">Mechanical</option><option value="Civil">Civil</option><option value="Automobile">Automobile</option><option value="Industrial">Industrial / Production</option><option value="Chemical">Chemical</option><option value="Aerospace">Aerospace</option><option value="Biotechnology">Biotechnology</option><option value="Environmental">Environmental</option><option value="Metallurgy">Metallurgy</option><option value="Mining">Mining</option><option value="Textile">Textile</option><option value="Petroleum">Petroleum</option><option value="Marine">Marine / Naval</option><option value="Instrumentation">Instrumentation</option><option value="Mechatronics">Mechatronics</option><option value="Robotics">Robotics</option><option value="Agricultural Engineering">Agricultural Engg.</option><option value="Food Technology">Food Technology</option><option value="Architecture">Architecture</option>
+                        </optgroup>
+                        <optgroup label="Sciences">
+                            <option value="Physics">Physics</option><option value="Chemistry">Chemistry</option><option value="Mathematics">Mathematics</option><option value="Statistics">Statistics</option><option value="Data Science">Data Science</option><option value="Biology">Biology / Zoology / Botany</option><option value="Microbiology">Microbiology</option><option value="Biochemistry">Biochemistry</option><option value="Biotechnology">Biotechnology</option><option value="Environmental Science">Environmental Science</option><option value="Geology">Geology</option><option value="Geography">Geography</option><option value="Agriculture">Agriculture / Agronomy</option><option value="Food Science">Food Science / Nutrition</option><option value="Forensic Science">Forensic Science</option><option value="Nanotechnology">Nanotechnology</option><option value="Actuarial Science">Actuarial Science</option>
+                        </optgroup>
+                        <optgroup label="Commerce & Management">
+                            <option value="Commerce">Commerce / B.Com</option><option value="Finance">Finance</option><option value="Accounting">Accounting</option><option value="BBA">BBA</option><option value="MBA">MBA</option><option value="Marketing">Marketing</option><option value="Economics">Economics</option><option value="Hotel Management">Hotel Management</option><option value="Tourism">Tourism</option><option value="Event Management">Event Management</option><option value="Aviation">Aviation</option>
+                        </optgroup>
+                        <optgroup label="Arts & Humanities">
+                            <option value="English">English / Literature</option><option value="Hindi">Hindi</option><option value="History">History</option><option value="Political Science">Political Science</option><option value="Sociology">Sociology</option><option value="Philosophy">Philosophy</option><option value="Psychology">Psychology</option><option value="Fine Arts">Fine Arts</option><option value="Performing Arts">Performing Arts</option><option value="Anthropology">Anthropology</option><option value="Archaeology">Archaeology</option><option value="Women's Studies">Women's Studies</option>
+                        </optgroup>
+                        <optgroup label="Law">
+                            <option value="Law">LLB / BA LLB</option><option value="Corporate Law">Corporate Law</option><option value="IPR">Intellectual Property Rights</option>
+                        </optgroup>
+                        <optgroup label="Media & Communication">
+                            <option value="Mass Communication">Mass Communication</option><option value="Journalism">Journalism</option><option value="Film Studies">Film Studies / Cinema</option><option value="Animation">Animation / VFX</option><option value="Public Relations">Public Relations</option><option value="Advertising">Advertising</option><option value="Digital Media">Digital Media</option>
+                        </optgroup>
+                        <optgroup label="Design">
+                            <option value="Design">Design</option><option value="Interior Design">Interior Design</option><option value="Fashion Design">Fashion Design</option><option value="Graphic Design">Graphic Design</option><option value="Textile Design">Textile Design</option><option value="Product Design">Product Design</option>
+                        </optgroup>
+                        <optgroup label="Medical & Health">
+                            <option value="Pharmacy">Pharmacy</option><option value="Nursing">Nursing</option><option value="Physiotherapy">Physiotherapy</option><option value="Ayurveda">Ayurveda (AYUSH)</option><option value="Homeopathy">Homeopathy</option><option value="Public Health">Public Health</option><option value="Nutrition">Nutrition / Dietetics</option><option value="Veterinary">Veterinary Science</option><option value="Dentistry">BDS / Dentistry</option>
+                        </optgroup>
+                        <optgroup label="Computer Applications & IT">
+                            <option value="BCA">BCA</option><option value="MCA">MCA</option><option value="Cybersecurity">Cybersecurity</option><option value="Cloud Computing">Cloud Computing</option><option value="Blockchain">Blockchain</option><option value="Web Development">Web Development</option>
+                        </optgroup>
+                        <optgroup label="Education">
+                            <option value="Education">B.Ed / M.Ed</option><option value="Special Education">Special Education</option><option value="Physical Education">Physical Education / Sports</option>
+                        </optgroup>
+                        <optgroup label="Social Sciences & Professional">
+                            <option value="Social Work">Social Work</option><option value="Library Science">Library Science</option><option value="Defense Studies">Defense Studies</option><option value="Disaster Management">Disaster Management</option><option value="Public Administration">Public Administration</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="f-row">
+                    <div class="fg"><label for="college">College / University</label><input type="text" id="college" placeholder="e.g. IIT Delhi"></div>
+                    <div class="fg"><label for="gradYear">Graduation Year</label><input type="number" id="gradYear" value="2026" min="2024" max="2030"></div>
+                </div>
+                <div class="fg"><label for="cgpa">CGPA (out of 10) <span class="req">*</span></label><input type="number" id="cgpa" placeholder="e.g. 8.5" min="0" max="10" step="0.1" required><div class="cgpa-hint" id="cgpaHint"></div></div>
+            </div>
+            <div class="fg-sec">
+                <h3 class="fg-title"><span class="sec-ico">🛠️</span> Skills</h3>
+                <p class="f-hint">Select your stream first, then pick skills (or type your own).</p>
+                <div class="skills-grid" id="skillsGrid"><div class="skills-ph">👆 Select your stream to see skill suggestions</div></div>
+                <div class="fg" style="margin-top:1rem"><label for="customSkill">Add a custom skill</label>
+                    <div class="sk-row"><input type="text" id="customSkill" placeholder="Type a skill and press Enter"><button type="button" class="btn-sm" onclick="addCustomSkill()">+ Add</button></div>
+                </div>
+                <div class="sel-sk" id="selectedSkills"></div>
+            </div>
+            <div class="fg-sec">
+                <h3 class="fg-title"><span class="sec-ico">🎯</span> Preferences</h3>
+                <div class="f-row">
+                    <div class="fg"><label for="location">Preferred Location</label>
+                        <select id="location"><option value="Any">Any Location</option><option value="Bangalore">Bangalore</option><option value="Mumbai">Mumbai</option><option value="Delhi">Delhi / NCR</option><option value="Hyderabad">Hyderabad</option><option value="Chennai">Chennai</option><option value="Pune">Pune</option><option value="Remote">Remote Only</option></select>
+                    </div>
+                    <div class="fg"><label for="duration">Preferred Duration</label>
+                        <select id="duration"><option value="0">No Preference</option><option value="1">1 Month</option><option value="2">2 Months</option><option value="3">3 Months</option><option value="4">4 Months</option><option value="6">6 Months</option></select>
+                    </div>
+                </div>
+                <div class="fg"><label class="chk-lbl"><input type="checkbox" id="remoteOk" checked> Open to remote internships</label></div>
+            </div>
+            <div class="f-submit">
+                <button type="submit" class="btn-p btn-lg" id="findBtn">
+                    <span class="btn-t">🔍 Find My Matches</span>
+                    <span class="btn-l" style="display:none"><span class="spinner"></span> Analyzing...</span>
+                </button>
+                <p class="f-disc">Synced securely with Supabase when signed in — or works privately in your browser.</p>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- ═══ RESULTS ═══ -->
+<section class="res-sec" id="resultsSection" style="display:none">
+    <div class="container">
+        <div class="sec-hdr">
+            <span class="badge badge-g">✅ Step 2</span>
+            <h2>Your <span class="gradient-text">Best Matches</span></h2>
+            <p id="resultsSummary"></p>
+        </div>
+        <div class="res-ov glass" id="resultsOverview"></div>
+        <div id="agentDashboard" style="display:none"></div>
+        <div class="matches" id="matchesGrid"></div>
+        <div class="tips glass" id="tipsCard"><h3>💡 Tips to Boost Your Chances</h3><div id="tipsContent"></div></div>
+        <div class="res-act">
+            <button class="btn-p" onclick="exportResults()">📄 Export Results</button>
+            <button class="btn-s" onclick="resetForm()">🔄 New Search</button>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ BROWSE ALL INTERNSHIPS ═══ -->
+<section class="browse-sec" id="browseSection">
+    <div class="container">
+        <div class="sec-hdr">
+            <span class="badge">🔎 Explore Catalog</span>
+            <h2>Browse All <span class="gradient-text">Internships</span></h2>
+            <p>Search across companies, roles, skills, and locations powered by your Supabase database.</p>
+        </div>
+        <div class="browse-controls">
+            <input type="text" id="webBrowseSearch" placeholder="Search Google, Python, Mumbai, Finance..." oninput="renderWebBrowse()">
+            <select id="webBrowseStream" onchange="renderWebBrowse()"><option value="">All Streams</option></select>
+            <select id="webBrowseRemote" onchange="renderWebBrowse()"><option value="all">All Locations</option><option value="remote">Remote Only</option></select>
+        </div>
+        <div id="webBrowseCount" style="font-size:.84rem;color:var(--t2);margin-bottom:1rem"></div>
+        <div class="browse-grid" id="webBrowseGrid"></div>
+    </div>
+</section>
+</main>
+
+<footer class="footer"><div class="container"><div style="text-align:center"><span class="logo-sm" style="display:inline-flex;align-items:center;gap:.4rem;justify-content:center"><img src="logo.png" alt="internVerse" class="brand-logo-img" style="width:24px;height:24px">intern<span class="logo-accent">Verse</span></span><p>Smart internship matching for all academic streams.</p><p class="footer-disc" style="font-size:.75rem;color:var(--t3);margin-top:1rem">Data is for demonstration. Always verify on the company's official website.</p></div></div></footer>
+
+<!-- Email Modal -->
+<div class="modal-overlay" id="emailModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3 id="modalTitle">📧 Application Email</h3>
+            <button class="modal-close" onclick="closeEmailModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="email-tabs" id="emailTabs"></div>
+            <div class="email-preview" id="emailPreview"></div>
+            <div class="email-actions">
+                <button class="btn-p" onclick="copyEmail()">📋 Copy to Clipboard</button>
+                <button class="btn-s" onclick="downloadEmail()">💾 Download .txt</button>
+                <button class="btn-s" onclick="openMailClientFromEmail()">📬 Open in Mail App</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Resume / Cover Letter Modal -->
+<div class="modal-overlay" id="resumeModal">
+    <div class="modal" style="max-width:800px">
+        <div class="modal-head">
+            <h3 id="rlModalTitle">📄 Resume & Cover Letter</h3>
+            <button class="modal-close" onclick="closeResumeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="rl-tabs" id="rlTabs"></div>
+            <div id="rlContent"></div>
+            <div class="email-actions">
+                <button class="btn-p" onclick="copyResumeContent()">📋 Copy to Clipboard</button>
+                <button class="btn-s" onclick="downloadResumeContent()">💾 Download .txt</button>
+                <button class="btn-s" onclick="openMailClientFromResume()">📬 Open in Mail App</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast" id="toast" style="display:none"></div>
+<div class="notif-badge" id="notifBadge"><span class="notif-icon">🔔</span><span id="notifText"></span></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════════
+   internVerse — Complete JS (DB + Matching + UI + Email)
+   ══════════════════════════════════════════════════════════════════════════════ */
+let selSkills=[], curRes=[], curProfile={};
+// Merge new internships into DB
+
+
+const DB=[
+{id:1,co:"Google",ti:"Software Engineering Intern",el:["CS/IT","Electronics","Data Science"],rq:["Python","Data Structures"],pf:["Java","C++","Algorithms"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹80,000/mo",url:"https://careers.google.com",desc:"Work on real Google products alongside senior engineers."},
+{id:2,co:"Microsoft",ti:"Software Engineering Intern",el:["CS/IT","Electronics"],rq:["C#","Python","Data Structures"],pf:["Azure","JavaScript","TypeScript"],loc:"Hyderabad",rem:0,dur:6,cg:7.5,st:"₹75,000/mo",url:"https://careers.microsoft.com",desc:"Build innovative solutions for Microsoft cloud and AI products."},
+{id:3,co:"Infosys",ti:"Full Stack Developer Intern",el:["CS/IT","Electronics"],rq:["HTML","CSS","JavaScript"],pf:["React","Node.js","SQL"],loc:"Pune",rem:0,dur:3,cg:6.0,st:"₹15,000/mo",url:"https://www.infosys.com/careers",desc:"Develop end-to-end web applications using modern frameworks."},
+{id:4,co:"Stripe",ti:"Data Engineering Intern",el:["CS/IT","Data Science","Mathematics"],rq:["Python","SQL"],pf:["Spark","Hadoop","ETL"],loc:"Remote",rem:1,dur:4,cg:7.0,st:"₹60,000/mo",url:"https://stripe.com/jobs",desc:"Build data pipelines that power Stripe's financial infrastructure."},
+{id:5,co:"TCS",ti:"AI/ML Intern",el:["CS/IT","Data Science","Electronics","Mathematics"],rq:["Python","Machine Learning"],pf:["TensorFlow","PyTorch","NLP"],loc:"Chennai",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.tcs.com/careers",desc:"Research and develop ML models for enterprise clients."},
+{id:6,co:"Tata Motors",ti:"Mechanical Design Intern",el:["Mechanical","Automobile","Industrial"],rq:["AutoCAD","SolidWorks"],pf:["CATIA","ANSYS","MATLAB"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.tatamotors.com/careers",desc:"Design and simulate automotive components using CAD/CAE tools."},
+{id:7,co:"L&T",ti:"Manufacturing Engineering Intern",el:["Mechanical","Industrial","Production"],rq:["CAD","Manufacturing"],pf:["CNC","Lean Manufacturing","Six Sigma"],loc:"Mumbai",rem:0,dur:4,cg:6.0,st:"₹12,000/mo",url:"https://www.larsentoubro.com/careers",desc:"Optimize manufacturing processes and quality on the shop floor."},
+{id:8,co:"Boeing",ti:"Aerospace Engineering Intern",el:["Mechanical","Aerospace"],rq:["MATLAB","Python"],pf:["CFD","FEA","3D Modeling"],loc:"Bangalore",rem:0,dur:6,cg:7.5,st:"₹30,000/mo",url:"https://www.boeing.co.in/careers",desc:"Support aircraft design and analysis with simulation tools."},
+{id:9,co:"L&T Construction",ti:"Site Engineering Intern",el:["Civil","Construction"],rq:["AutoCAD","Structural Analysis"],pf:["STAAD Pro","Revit","Project Management"],loc:"Delhi",rem:0,dur:6,cg:6.0,st:"₹15,000/mo",url:"https://www.larsentoubro.com/careers",desc:"Supervise construction sites and prepare engineering drawings."},
+{id:10,co:"WSP Global",ti:"Transportation Planning Intern",el:["Civil","Urban Planning"],rq:["AutoCAD","Civil Engineering"],pf:["Traffic Simulation","GIS","Python"],loc:"Mumbai",rem:0,dur:4,cg:6.5,st:"₹14,000/mo",url:"https://www.wsp.com/careers",desc:"Assist in transportation modeling and infrastructure planning."},
+{id:11,co:"Siemens",ti:"Power Systems Intern",el:["Electrical","Electronics","ECE"],rq:["MATLAB","Power Systems"],pf:["Simulink","PLC","SCADA"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹22,000/mo",url:"https://www.siemens.co.in/careers",desc:"Work on smart grid and power automation projects."},
+{id:12,co:"Qualcomm",ti:"VLSI Design Intern",el:["Electronics","ECE","Electrical"],rq:["Verilog","VLSI"],pf:["SystemVerilog","Cadence","Tapeout"],loc:"Hyderabad",rem:0,dur:6,cg:7.5,st:"₹40,000/mo",url:"https://www.qualcomm.com/careers",desc:"Design and verify digital circuits for mobile chipsets."},
+{id:13,co:"Samsung R&D",ti:"Embedded Systems Intern",el:["Electronics","ECE","CS/IT"],rq:["C","Embedded C"],pf:["RTOS","Linux Kernel","ARM"],loc:"Noida",rem:0,dur:4,cg:7.0,st:"₹25,000/mo",url:"https://www.samsung.com/in/sris/careers",desc:"Develop firmware and drivers for consumer electronics."},
+{id:14,co:"Deloitte",ti:"Audit & Assurance Intern",el:["Commerce","Finance","BBA"],rq:["Accounting","MS Excel"],pf:["Tally","SAP","Financial Analysis"],loc:"Mumbai",rem:0,dur:6,cg:6.0,st:"₹18,000/mo",url:"https://www.deloitte.com/in/en/careers.html",desc:"Assist in auditing engagements and financial statement reviews."},
+{id:15,co:"Goldman Sachs",ti:"Finance Intern",el:["Commerce","Finance","Economics","Mathematics"],rq:["Financial Analysis","MS Excel"],pf:["Python","Bloomberg","Valuation Modeling"],loc:"Bangalore",rem:0,dur:3,cg:8.0,st:"₹50,000/mo",url:"https://www.goldmansachs.com/careers",desc:"Support deal teams with research, analysis, and financial modeling."},
+{id:16,co:"PwC",ti:"Consulting Intern",el:["Commerce","BBA","MBA","Economics"],rq:["Business Analysis","MS Office"],pf:["PowerPoint","Data Analysis","SQL"],loc:"Delhi",rem:0,dur:3,cg:6.5,st:"₹20,000/mo",url:"https://www.pwc.in/careers.html",desc:"Work with consulting teams on strategy and operations projects."},
+{id:17,co:"Ogilvy",ti:"Content & Copywriting Intern",el:["Arts","Journalism","English","Design","Mass Communication"],rq:["Content Writing","English"],pf:["SEO","Social Media","Copywriting"],loc:"Mumbai",rem:1,dur:3,cg:5.5,st:"₹12,000/mo",url:"https://www.ogilvy.com/careers",desc:"Create compelling content for brand campaigns across digital and print."},
+{id:18,co:"Zomato",ti:"UX/UI Design Intern",el:["Design","Arts","CS/IT"],rq:["Figma","UI Design"],pf:["Prototyping","User Research","Illustrator"],loc:"Gurugram",rem:0,dur:4,cg:6.0,st:"₹20,000/mo",url:"https://www.zomato.com/careers",desc:"Design intuitive interfaces for Zomato's consumer products."},
+{id:19,co:"Google",ti:"Digital Marketing Intern",el:["Arts","Commerce","Mass Communication","Marketing"],rq:["Digital Marketing","Social Media"],pf:["Google Ads","Analytics","Content Strategy"],loc:"Bangalore",rem:1,dur:3,cg:6.0,st:"₹25,000/mo",url:"https://careers.google.com",desc:"Plan and execute digital marketing campaigns for Google products."},
+{id:20,co:"Flipkart",ti:"Data Science Intern",el:["Data Science","CS/IT","Mathematics","Statistics"],rq:["Python","Statistics"],pf:["SQL","Machine Learning","Tableau"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹40,000/mo",url:"https://www.flipkartcareers.com",desc:"Build recommendation and forecasting models for e-commerce."},
+{id:21,co:"Dr. Reddy's",ti:"Pharmaceutical Research Intern",el:["Pharmacy","Biotechnology","Chemistry"],rq:["Pharmacology","Drug Analysis"],pf:["HPLC","Mass Spectrometry","Regulatory Affairs"],loc:"Hyderabad",rem:0,dur:6,cg:6.5,st:"₹16,000/mo",url:"https://www.drreddys.com/careers",desc:"Support drug development and quality testing in pharma R&D."},
+{id:22,co:"Amazon",ti:"Operations Intern",el:["CS/IT","Mechanical","Industrial","Commerce","BBA"],rq:["MS Excel","Analytical Thinking"],pf:["SQL","Python","Supply Chain"],loc:"Multiple Cities",rem:0,dur:4,cg:6.5,st:"₹30,000/mo",url:"https://www.amazon.jobs",desc:"Optimize fulfillment and logistics operations for Amazon India."},
+{id:23,co:"Zoho",ti:"Technical Writer Intern",el:["CS/IT","English","Arts"],rq:["Technical Writing","English"],pf:["API Docs","Markdown","Git"],loc:"Chennai",rem:1,dur:3,cg:6.0,st:"₹15,000/mo",url:"https://www.zoho.com/careers.html",desc:"Write clear documentation and user guides for Zoho products."},
+{id:24,co:"Freshworks",ti:"HR Intern",el:["BBA","Commerce","Psychology","Arts"],rq:["Communication"],pf:["MS Excel","Recruitment","Employee Engagement"],loc:"Chennai",rem:0,dur:3,cg:5.5,st:"₹10,000/mo",url:"https://www.freshworks.com/careers",desc:"Support HR operations including recruitment and culture programs."},
+{id:25,co:"HDFC Bank",ti:"Banking Intern",el:["Commerce","Finance","BBA","Economics"],rq:["MS Excel","Communication"],pf:["Financial Products","CRM","Banking Software"],loc:"Multiple Cities",rem:0,dur:3,cg:5.5,st:"₹12,000/mo",url:"https://www.hdfcbank.com/careers",desc:"Shadow banking professionals and assist in customer operations."},
+{id:26,co:"Adobe",ti:"UI/UX Design Intern",el:["Design","Arts","CS/IT"],rq:["Figma","UI Design"],pf:["Illustrator","Prototyping","User Research"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹35,000/mo",url:"https://www.adobe.com/careers",desc:"Design world-class creative tools used by millions."},
+{id:27,co:"Razorpay",ti:"Software Development Intern",el:["CS/IT","Electronics"],rq:["Python","JavaScript"],pf:["React","Node.js","SQL"],loc:"Bangalore",rem:1,dur:6,cg:6.5,st:"₹30,000/mo",url:"https://razorpay.com/careers",desc:"Build payment infrastructure powering India's digital economy."},
+{id:28,co:"Bajaj Auto",ti:"Product Design Intern",el:["Mechanical","Automobile"],rq:["SolidWorks","AutoCAD"],pf:["CATIA","GD&T","Prototyping"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.bajajauto.com/careers",desc:"Design next-generation two-wheeler and three-wheeler components."},
+{id:29,co:"Deloitte",ti:"Data Analytics Intern",el:["Data Science","CS/IT","Statistics","Commerce"],rq:["Python","SQL"],pf:["Tableau","Power BI","Excel"],loc:"Mumbai",rem:0,dur:6,cg:6.5,st:"₹22,000/mo",url:"https://www.deloitte.com/in/en/careers.html",desc:"Analyze business data and create dashboards for enterprise clients."},
+{id:30,co:"Naukri.com",ti:"Content Marketing Intern",el:["Arts","English","Journalism","Mass Communication"],rq:["Content Writing","English"],pf:["SEO","Social Media","Blogging"],loc:"Gurugram",rem:1,dur:3,cg:5.5,st:"₹15,000/mo",url:"https://www.naukri.com/careers",desc:"Create engaging content for India's largest job portal."},
+
+// ── MBA / Management ──
+{id:31,co:"BCG",ti:"Strategy Consulting Intern",el:["MBA","BBA","Commerce","Economics"],rq:["Business Analysis","PowerPoint"],pf:["Financial Modeling","Data Analysis","Strategy"],loc:"Delhi",rem:0,dur:6,cg:8.0,st:"₹60,000/mo",url:"https://careers.bcg.com",desc:"Work with Fortune 500 clients on strategic transformation projects."},
+{id:32,co:"Flipkart",ti:"Product Management Intern",el:["MBA","BBA","CS/IT","Design"],rq:["MS Excel","Communication"],pf:["SQL","Data Analysis","User Research"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹45,000/mo",url:"https://www.flipkartcareers.com",desc:"Drive product strategy and execution for Flipkart's core features."},
+{id:33,co:"HUL",ti:"Brand Management Intern",el:["MBA","BBA","Marketing","Commerce"],rq:["Marketing","MS Excel"],pf:["Consumer Research","PowerPoint","Analytics"],loc:"Mumbai",rem:0,dur:2,cg:7.0,st:"₹35,000/mo",url:"https://www.hul.co.in/careers",desc:"Manage brand portfolios and drive go-to-market strategies for FMCG products."},
+{id:34,co:"McKinsey",ti:"Business Analyst Intern",el:["MBA","Economics","Finance","Mathematics"],rq:["Data Analysis","PowerPoint"],pf:["SQL","Python","Financial Modeling"],loc:"Mumbai",rem:0,dur:6,cg:8.5,st:"₹70,000/mo",url:"https://www.mckinsey.com/careers",desc:"Solve complex business problems with data-driven insights for top clients."},
+{id:35,co:"Zomato",ti:"Business Strategy Intern",el:["MBA","BBA","Economics","Commerce"],rq:["Business Analysis","MS Excel"],pf:["SQL","Market Research","Competitive Analysis"],loc:"Gurugram",rem:0,dur:6,cg:7.0,st:"₹40,000/mo",url:"https://www.zomato.com/careers",desc:"Shape Zomato's growth strategy across new markets and verticals."},
+
+// ── Finance ──
+{id:36,co:"ICICI Bank",ti:"Investment Banking Intern",el:["Finance","Commerce","MBA","Economics"],rq:["Financial Analysis","MS Excel"],pf:["PowerPoint","Bloomberg","Valuation"],loc:"Mumbai",rem:0,dur:6,cg:7.5,st:"₹30,000/mo",url:"https://www.icicibank.com/careers",desc:"Support deal execution and financial modeling for corporate clients."},
+{id:37,co:"Kotak Securities",ti:"Wealth Management Intern",el:["Finance","Commerce","BBA"],rq:["Financial Analysis","Communication"],pf:["MS Excel","Portfolio Management","CRM"],loc:"Multiple Cities",rem:0,dur:3,cg:6.0,st:"₹15,000/mo",url:"https://www.kotaksecurities.com/careers",desc:"Assist wealth advisors in managing high-net-worth client portfolios."},
+{id:38,co:"SEBI",ti:"Regulatory Research Intern",el:["Finance","Economics","Commerce","Mathematics"],rq:["Financial Analysis","Research"],pf:["MS Excel","Data Analysis","Report Writing"],loc:"Mumbai",rem:0,dur:6,cg:7.5,st:"₹25,000/mo",url:"https://www.sebi.gov.in",desc:"Research capital market regulations and analyze financial data."},
+
+// ── Psychology ──
+{id:39,co:"Practo",ti:"Mental Health Content Intern",el:["Psychology","Arts","English"],rq:["Content Writing","Psychology"],pf:["Research","Empathy","Communication"],loc:"Bangalore",rem:1,dur:3,cg:5.5,st:"₹12,000/mo",url:"https://www.practo.com/careers",desc:"Create mental health content and wellness resources for millions of users."},
+{id:40,co:"YourDOST",ti:"Counseling Intern",el:["Psychology","Social Work"],rq:["Psychology","Active Listening"],pf:["CBT","Empathy","Behavioral Therapy"],loc:"Delhi",rem:1,dur:6,cg:6.0,st:"₹10,000/mo",url:"https://www.yourdost.com",desc:"Provide online mental health support and emotional wellness coaching."},
+{id:41,co:"1mg",ti:"Health Psychology Intern",el:["Psychology","Biotechnology","Pharmacy"],rq:["Psychology","Research"],pf:["Data Analysis","Content Writing","Medical Knowledge"],loc:"Gurugram",rem:0,dur:4,cg:6.0,st:"₹14,000/mo",url:"https://www.1mg.com/careers",desc:"Research patient behavior and design health engagement programs."},
+{id:42,co:"Deloitte",ti:"People & Organisation Intern",el:["Psychology","BBA","HR","MBA"],rq:["Communication","Psychology"],pf:["MS Excel","Employee Surveys","Workplace Culture"],loc:"Mumbai",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.deloitte.com/in/en/careers.html",desc:"Support organizational transformation and employee engagement initiatives."},
+
+// ── Biotechnology ──
+{id:43,co:"Serum Institute",ti:"Biotech Research Intern",el:["Biotechnology","Pharmacy","Chemistry"],rq:["Cell Culture","Molecular Biology"],pf:["PCR","ELISA","Bioinformatics"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹15,000/mo",url:"https://www.seruminstitute.com/careers",desc:"Work on vaccine development and immunology research projects."},
+{id:44,co:"Biocon",ti:"Pharmaceutical Biotech Intern",el:["Biotechnology","Pharmacy","Chemistry"],rq:["Protein Purification","Biology"],pf:["HPLC","Chromatography","GMP"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹18,000/mo",url:"https://www.biocon.com/careers",desc:"Support biopharmaceutical R&D in biosimilar and small molecule development."},
+
+// ── Chemistry ──
+{id:45,co:"SRF Limited",ti:"Chemistry R&D Intern",el:["Chemistry","Pharmacy","Biotechnology"],rq:["Chemistry","Lab Techniques"],pf:["HPLC","Spectroscopy","Organic Synthesis"],loc:"Delhi",rem:0,dur:6,cg:6.5,st:"₹14,000/mo",url:"https://www.srf.com/careers",desc:"Conduct R&D experiments in specialty chemicals and pharmaceutical intermediates."},
+{id:46,co:"Tata Chemicals",ti:"QC/QA Intern",el:["Chemistry","Pharmacy"],rq:["Chemistry","Quality Control"],pf:["Instrumental Analysis","MS Excel","Lab Safety"],loc:"Mumbai",rem:0,dur:4,cg:6.0,st:"₹12,000/mo",url:"https://www.tatachemicals.com/careers",desc:"Perform quality control testing and ensure compliance for chemical products."},
+
+// ── Mass Communication ──
+{id:47,co:"NDTV",ti:"Broadcast Journalism Intern",el:["Mass Communication","Journalism","English"],rq:["Content Writing","Research"],pf:["Video Editing","Social Media","News Writing"],loc:"Delhi",rem:0,dur:3,cg:5.5,st:"₹10,000/mo",url:"https://www.ndtv.com/careers",desc:"Research and produce news segments for prime-time television broadcasts."},
+{id:48,co:"The Times of India",ti:"Digital News Intern",el:["Mass Communication","Journalism","English"],rq:["English","Content Writing"],pf:["SEO","WordPress","Social Media"],loc:"Multiple Cities",rem:0,dur:3,cg:5.5,st:"₹12,000/mo",url:"https://timesofindia.indiatimes.com/aboutus",desc:"Write and publish news stories for India's largest English newspaper."},
+{id:49,co:"BuzzFeed India",ti:"Social Media Intern",el:["Mass Communication","Arts","English","Marketing"],rq:["Social Media","Content Creation"],pf:["Video Editing","Copywriting","Canva"],loc:"Mumbai",rem:1,dur:3,cg:5.0,st:"₹15,000/mo",url:"https://www.buzzfeed.com/careers",desc:"Create viral social media content and manage community engagement."},
+
+// ── Statistics / Mathematics ──
+{id:50,co:"Mu Sigma",ti:"Decision Science Intern",el:["Statistics","Mathematics","Data Science","CS/IT"],rq:["Statistics","Python"],pf:["SQL","R","Data Visualization"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹25,000/mo",url:"https://www.mu-sigma.com/careers",desc:"Apply statistical models to solve business problems for Fortune 500 clients."},
+{id:51,co:"J.P. Morgan",ti:"Quantitative Research Intern",el:["Mathematics","Statistics","Finance","Data Science"],rq:["Python","Statistics"],pf:["R","SQL","Machine Learning"],loc:"Mumbai",rem:0,dur:6,cg:8.0,st:"₹55,000/mo",url:"https://www.jpmorgan.com/careers",desc:"Develop quantitative models for trading and risk management."},
+{id:52,co:"Google",ti:"Quantitative Analyst Intern",el:["Mathematics","Statistics","Data Science"],rq:["Python","Statistics","SQL"],pf:["R","Machine Learning","BigQuery"],loc:"Bangalore",rem:0,dur:6,cg:8.0,st:"₹70,000/mo",url:"https://careers.google.com",desc:"Apply advanced statistics to optimize Google's products and ads systems."},
+
+// ── Automobile ──
+{id:53,co:"Mahindra",ti:"Vehicle Design Intern",el:["Automobile","Mechanical"],rq:["SolidWorks","AutoCAD"],pf:["CATIA","NVH Analysis","GD&T"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.mahindra.com/careers",desc:"Design EV components and body structures for next-gen electric vehicles."},
+{id:54,co:"Maruti Suzuki",ti:"Production Planning Intern",el:["Automobile","Mechanical","Industrial"],rq:["CAD","Manufacturing"],pf:["Lean Manufacturing","SAP","Supply Chain"],loc:"Gurugram",rem:0,dur:6,cg:6.5,st:"₹22,000/mo",url:"https://www.marutisuzuki.com/careers",desc:"Optimize production planning and inventory management for automobile assembly."},
+
+// ── Industrial / Production ──
+{id:55,co:"Tata Steel",ti:"Industrial Engineering Intern",el:["Industrial","Mechanical","Production"],rq:["CAD","Manufacturing"],pf:["Six Sigma","SAP","Process Optimization"],loc:"Jamshedpur",rem:0,dur:6,cg:6.0,st:"₹18,000/mo",url:"https://www.tatasteel.com/careers",desc:"Optimize steel manufacturing processes and improve operational efficiency."},
+{id:56,co:"Reliance Industries",ti:"Operations Intern",el:["Industrial","Mechanical","Commerce","MBA"],rq:["MS Excel","Analytical Thinking"],pf:["SAP","Supply Chain","SQL"],loc:"Mumbai",rem:0,dur:6,cg:7.0,st:"₹25,000/mo",url:"https://www.ril.com/careers",desc:"Support operations across petrochemicals, retail, and telecom verticals."},
+
+// ── Construction ──
+{id:57,co:"DLF",ti:"Real Estate Development Intern",el:["Civil","Construction","Architecture"],rq:["AutoCAD","Project Management"],pf:["Revit","MS Project","Cost Estimation"],loc:"Delhi",rem:0,dur:6,cg:6.0,st:"₹15,000/mo",url:"https://www.dlf.in/careers",desc:"Assist in planning and executing large-scale residential and commercial projects."},
+{id:58,co:"Godrej Properties",ti:"Construction Management Intern",el:["Civil","Construction"],rq:["AutoCAD","Structural Analysis"],pf:["Revit","BIM","Quality Control"],loc:"Mumbai",rem:0,dur:4,cg:6.0,st:"₹14,000/mo",url:"https://www.godrejproperties.com",desc:"Manage construction timelines and quality for premium residential projects."},
+
+// ── Pharmacy (more) ──
+{id:59,co:"Sun Pharma",ti:"Clinical Research Intern",el:["Pharmacy","Biotechnology"],rq:["Pharmacology","Clinical Research"],pf:["GCP","Data Collection","Medical Writing"],loc:"Mumbai",rem:0,dur:6,cg:6.5,st:"₹16,000/mo",url:"https://www.sunpharma.com/careers",desc:"Support clinical trial documentation and regulatory submissions."},
+{id:60,co:"Cipla",ti:"Drug Development Intern",el:["Pharmacy","Chemistry","Biotechnology"],rq:["Pharmacology","Drug Analysis"],pf:["HPLC","Formulation","Regulatory Affairs"],loc:"Mumbai",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.cipla.com/careers",desc:"Work on formulation development and bioequivalence studies for generic drugs."},
+
+// ── More CS/IT ──
+{id:61,co:"Atlassian",ti:"Backend Engineering Intern",el:["CS/IT","Electronics"],rq:["Java","SQL"],pf:["Python","AWS","REST APIs"],loc:"Bangalore",rem:1,dur:6,cg:7.0,st:"₹45,000/mo",url:"https://www.atlassian.com/company/careers",desc:"Build scalable backend services for Jira and Confluence products."},
+{id:62,co:"Swiggy",ti:"Mobile App Development Intern",el:["CS/IT","Electronics"],rq:["JavaScript","React"],pf:["React Native","TypeScript","Firebase"],loc:"Bangalore",rem:0,dur:6,cg:6.5,st:"₹35,000/mo",url:"https://careers.swiggy.com",desc:"Build and optimize the Swiggy mobile app experience for millions of users."},
+{id:63,co:"PhonePe",ti:"Platform Engineering Intern",el:["CS/IT","Electronics"],rq:["Python","SQL"],pf:["Go","Kubernetes","Microservices"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹40,000/mo",url:"https://www.phonepe.com/careers",desc:"Build resilient payment infrastructure handling millions of daily transactions."},
+{id:64,co:"Cred",ti:"Frontend Engineering Intern",el:["CS/IT"],rq:["JavaScript","React"],pf:["TypeScript","CSS","GraphQL"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹50,000/mo",url:"https://cred.club/careers",desc:"Craft premium user experiences for India's most exclusive credit platform."},
+{id:65,co:"Ola Electric",ti:"Software Intern — IoT",el:["CS/IT","Electronics"],rq:["Python","C"],pf:["IoT","AWS","Embedded Systems"],loc:"Bangalore",rem:0,dur:6,cg:6.5,st:"₹30,000/mo",url:"https://www.olaelectric.com/careers",desc:"Develop IoT platforms and telemetry systems for electric vehicles."},
+
+// ── More Arts / Creative ──
+{id:66,co:"Netflix",ti:"Content Marketing Intern",el:["Arts","Mass Communication","English"],rq:["Content Writing","Social Media"],pf:["Copywriting","Video Editing","SEO"],loc:"Mumbai",rem:1,dur:3,cg:6.0,st:"₹30,000/mo",url:"https://jobs.netflix.com",desc:"Create marketing campaigns for Netflix India's original content launches."},
+{id:67,co:"Hotstar",ti:"Creative Production Intern",el:["Arts","Design","Mass Communication"],rq:["Video Editing","Content Creation"],pf:["Adobe Premiere","After Effects","Canva"],loc:"Mumbai",rem:0,dur:3,cg:5.5,st:"₹18,000/mo",url:"https://www.hotstar.com/in/careers",desc:"Produce creative assets and video content for Hotstar's streaming platform."},
+{id:68,co:"Pinkvilla",ti:"Lifestyle Writer Intern",el:["Arts","English","Journalism"],rq:["Content Writing","English"],pf:["SEO","WordPress","Social Media"],loc:"Mumbai",rem:1,dur:3,cg:5.0,st:"₹10,000/mo",url:"https://www.pinkvilla.com/careers",desc:"Write trending lifestyle, fashion, and entertainment stories."},
+
+// ── Economics ──
+{id:69,co:"RBI",ti:"Research Intern — Economics",el:["Economics","Finance","Mathematics"],rq:["Economic Analysis","MS Excel"],pf:["Stata","Econometrics","R"],loc:"Mumbai",rem:0,dur:6,cg:8.0,st:"₹30,000/mo",url:"https://www.rbi.org.in",desc:"Conduct monetary policy research and macroeconomic analysis."},
+{id:70,co:"World Bank",ti:"Development Economics Intern",el:["Economics","Finance","Public Policy"],rq:["Data Analysis","Research"],pf:["Stata","R","Python"],loc:"Delhi",rem:0,dur:6,cg:8.0,st:"₹50,000/mo",url:"https://www.worldbank.org/en/about/careers",desc:"Research development policies and economic programs in South Asia."},
+
+// ── English / Literature ──
+{id:71,co:"Penguin Random House",ti:"Editorial Intern",el:["English","Arts","Journalism"],rq:["English","Content Writing"],pf:["Editing","Proofreading","Literary Analysis"],loc:"Delhi",rem:0,dur:3,cg:6.0,st:"₹10,000/mo",url:"https://www.penguinrandomhouse.in/careers",desc:"Assist editors with manuscript reviews, proofreading, and publishing workflows."},
+{id:72,co:"Jaico Publishing",ti:"Literary Intern",el:["English","Arts"],rq:["English","Content Writing"],pf:["Copy Editing","Research","MS Word"],loc:"Mumbai",rem:1,dur:3,cg:5.5,st:"₹8,000/mo",url:"https://www.jaicopublishing.com",desc:"Support editorial operations and assist in book production workflows."},
+
+// ── Additional cross-stream ──
+{id:73,co:"Titan Company",ti:"Retail Management Intern",el:["BBA","MBA","Commerce"],rq:["MS Excel","Communication"],pf:["Retail Analytics","CRM","PowerPoint"],loc:"Bangalore",rem:0,dur:3,cg:6.0,st:"₹18,000/mo",url:"https://www.titan.co.in/careers",desc:"Learn retail operations and customer experience management for Titan brands."},
+{id:74,co:"Tanishq",ti:"Merchandising Intern",el:["BBA","MBA","Commerce","Design"],rq:["MS Excel","Communication"],pf:["Visual Merchandising","Market Research","PowerPoint"],loc:"Multiple Cities",rem:0,dur:3,cg:6.0,st:"₹15,000/mo",url:"https://www.tanishq.co.in/careers",desc:"Assist in product merchandising and in-store experience design."},
+{id:75,co:"Nasscom",ti:"Industry Research Intern",el:["BBA","MBA","Economics","CS/IT"],rq:["Research","MS Excel"],pf:["PowerPoint","Data Analysis","Report Writing"],loc:"Delhi",rem:0,dur:3,cg:6.5,st:"₹12,000/mo",url:"https://www.nasscom.in/careers",desc:"Research IT industry trends and produce policy recommendation reports."},
+{"id":76,co:"Lenskart",ti:"Supply Chain Intern",el:["BBA","MBA","Commerce","Industrial"],rq:["MS Excel","Analytical Thinking"],pf:["SAP","SQL","Inventory Management"],loc:"Delhi",rem:0,dur:4,cg:6.0,st:"₹16,000/mo",url:"https://www.lenskart.com/careers",desc:"Optimize supply chain operations for India's largest eyewear company."},
+{id:77,co:"Meesho",ti:"Growth Marketing Intern",el:["BBA","MBA","Marketing","Commerce"],rq:["Digital Marketing","MS Excel"],pf:["Google Ads","Analytics","SQL"],loc:"Bangalore",rem:0,dur:6,cg:6.5,st:"₹25,000/mo",url:"https://www.meesho.com/careers",desc:"Drive user acquisition and retention for India's fastest-growing social commerce platform."},
+{id:78,co:"PolicyBazaar",ti:"Insurance Analytics Intern",el:["Data Science","Statistics","Finance","CS/IT"],rq:["Python","SQL"],pf:["Tableau","Machine Learning","MS Excel"],loc:"Gurugram",rem:0,dur:6,cg:6.5,st:"₹22,000/mo",url:"https://www.policybazaar.com/careers",desc:"Analyze insurance data and build predictive models for pricing optimization."},
+{id:79,co:"MakeMyTrip",ti:"Data Analytics Intern",el:["Data Science","CS/IT","Statistics"],rq:["SQL","Python"],pf:["Tableau","Excel","A/B Testing"],loc:"Gurugram",rem:0,dur:6,cg:7.0,st:"₹30,000/mo",url:"https://www.makemytrip.com/careers",desc:"Analyze travel data to optimize pricing, recommendations, and user experience."},
+{id:80,co:"HCL Tech",ti:"Cybersecurity Intern",el:["CS/IT","Electronics"],rq:["Python","Networking"],pf:["Linux","Wireshark","SIEM"],loc:"Noida",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.hcltech.com/careers",desc:"Monitor security threats and assist in incident response for enterprise clients."},
+{id:81,co:"NABARD",ti:"Agricultural Finance Intern",el:["Agriculture","Commerce"],rq:["MS Excel","Research"],pf:["Rural Development","Financial Analysis","Agricultural Policy"],loc:"Mumbai",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.nabard.org",desc:"Research agricultural financing schemes and rural development programs."},
+{id:82,co:"ICAR",ti:"Crop Research Intern",el:["Agriculture","Biotechnology"],rq:["Research","Lab Techniques"],pf:["Data Analysis","MATLAB","MS Excel"],loc:"New Delhi",rem:0,dur:6,cg:7.0,st:"₹15,000/mo",url:"https://icar.org.in",desc:"Conduct crop improvement research and field trials."},
+{id:83,co:"Nestle India",ti:"Food Technology Intern",el:["Food Science","Chemistry"],rq:["Food Chemistry","Lab Techniques"],pf:["Quality Control","HACCP","MS Excel"],loc:"Mumbai",rem:0,dur:4,cg:6.5,st:"₹16,000/mo",url:"https://www.nestle.in",desc:"Work on food product development and quality assurance."},
+{id:84,co:"Cyril Amarchand",ti:"Corporate Law Intern",el:["Law","Corporate Law"],rq:["Legal Research","MS Word"],pf:["Contract Drafting","Corporate Law","Due Diligence"],loc:"Mumbai",rem:0,dur:6,cg:7.0,st:"₹20,000/mo",url:"https://www.cyrilshroff.com",desc:"Assist in corporate mergers, acquisitions, and regulatory compliance."},
+{id:85,co:"AIIMS",ti:"Nursing Research Intern",el:["Nursing","Healthcare"],rq:["Clinical Skills","Patient Care"],pf:["Research","Medical Terminology","Documentation"],loc:"Delhi",rem:0,dur:6,cg:6.0,st:"₹12,000/mo",url:"https://www.aiims.edu",desc:"Conduct nursing research and assist in patient care at AIIMS."},
+{id:86,co:"Apollo Hospitals",ti:"Physiotherapy Intern",el:["Physiotherapy","Sports Science"],rq:["Physiotherapy","Exercise Therapy"],pf:["Rehabilitation","Manual Therapy","Patient Assessment"],loc:"Chennai",rem:0,dur:6,cg:6.0,st:"₹10,000/mo",url:"https://www.apollohospitals.com",desc:"Assist in patient rehabilitation and treatment planning."},
+{id:87,co:"Freshworks",ti:"BCA Developer Intern",el:["BCA","MCA","CS/IT"],rq:["JavaScript","HTML"],pf:["React","Node.js","Git"],loc:"Chennai",rem:0,dur:6,cg:6.0,st:"₹18,000/mo",url:"https://www.freshworks.com/careers",desc:"Build web applications for Freshworks SaaS products."},
+{id:88,co:"Quick Heal",ti:"Cybersecurity Intern",el:["CS/IT","Cybersecurity"],rq:["Networking","Linux"],pf:["Python","Penetration Testing","SIEM"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.quickheal.co.in",desc:"Research cyber threats and develop security solutions."},
+{id:89,co:"DRDO",ti:"Physics Research Intern",el:["Physics","Electronics"],rq:["MATLAB","Research"],pf:["Optics","Quantum Mechanics","Simulation"],loc:"Delhi",rem:0,dur:6,cg:7.5,st:"₹20,000/mo",url:"https://drdo.gov.in",desc:"Conduct defense-related physics research."},
+{id:90,co:"IISc Bangalore",ti:"Chemistry Research Intern",el:["Chemistry","Pharmacy"],rq:["Chemistry","Lab Techniques"],pf:["Spectroscopy","Organic Synthesis","HPLC"],loc:"Bangalore",rem:0,dur:6,cg:7.5,st:"₹16,000/mo",url:"https://www.iisc.ac.in",desc:"Cutting-edge chemistry research at India's premier institute."},
+{id:91,co:"ZSI",ti:"Zoological Research Intern",el:["Zoology","Biology"],rq:["Research","Lab Techniques"],pf:["Biodiversity","Taxonomy","Field Work"],loc:"Kolkata",rem:0,dur:6,cg:6.5,st:"₹12,000/mo",url:"https://www.zsi.gov.in",desc:"Conduct wildlife surveys and biodiversity research."},
+{id:92,co:"Bharat Biotech",ti:"Microbiology Intern",el:["Microbiology","Biotechnology"],rq:["Lab Techniques","Microbiology"],pf:["Cell Culture","PCR","Sterile Techniques"],loc:"Hyderabad",rem:0,dur:6,cg:6.5,st:"₹14,000/mo",url:"https://www.bharatbiotech.com",desc:"Assist in vaccine development research."},
+{id:93,co:"UNICEF India",ti:"Social Development Intern",el:["Social Work","Psychology"],rq:["Research","MS Office"],pf:["Community Development","Data Collection","Report Writing"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹18,000/mo",url:"https://www.unicef.org/india",desc:"Support child welfare programs and community assessments."},
+{id:94,co:"Taj Hotels",ti:"Hotel Operations Intern",el:["Hotel Management","Tourism"],rq:["Customer Service","MS Office"],pf:["Revenue Management","F&B Operations","Event Planning"],loc:"Multiple Cities",rem:0,dur:6,cg:6.0,st:"₹12,000/mo",url:"https://www.ihcltata.com/careers",desc:"Learn hotel operations across front office and F&B."},
+{id:95,co:"Prana Studios",ti:"VFX Artist Intern",el:["Animation","VFX","Film Studies"],rq:["After Effects","Nuke"],pf:["Maya","Houdini","Compositing"],loc:"Mumbai",rem:0,dur:6,cg:6.0,st:"₹15,000/mo",url:"https://www.pranastudios.com",desc:"Create visual effects for films and TV shows."},
+{id:96,co:"FabIndia",ti:"Fashion Design Intern",el:["Fashion Design","Design"],rq:["Adobe Illustrator","Fashion Sketching"],pf:["Textile Design","Pattern Making","Sustainability"],loc:"Delhi",rem:0,dur:3,cg:5.5,st:"₹10,000/mo",url:"https://www.fabindia.com",desc:"Assist in design collection and textile sourcing."},
+{id:97,co:"NID",ti:"Interior Design Research",el:["Interior Design","Architecture"],rq:["AutoCAD","SketchUp"],pf:["Revit","3D Visualization","Vastu"],loc:"Ahmedabad",rem:0,dur:6,cg:7.0,st:"₹12,000/mo",url:"https://www.nid.edu",desc:"Research sustainable interior design solutions."},
+{id:98,co:"GSI",ti:"Geological Survey Intern",el:["Geology","Mining"],rq:["Field Work","Geological Mapping"],pf:["GIS","Remote Sensing","MS Excel"],loc:"Multiple Cities",rem:0,dur:6,cg:6.5,st:"₹14,000/mo",url:"https://www.geologicalsurvayofindia.gov.in",desc:"Conduct geological surveys and mineral exploration."},
+{id:99,co:"ASI",ti:"Archaeological Research Intern",el:["Archaeology","History"],rq:["Research","MS Office"],pf:["Excavation","Artifact Analysis","Survey"],loc:"Multiple Cities",rem:0,dur:6,cg:6.5,st:"₹10,000/mo",url:"https://asi.nic.in",desc:"Assist in archaeological excavations and heritage documentation."},
+{id:100,co:"CPCB",ti:"Environmental Monitoring Intern",el:["Environmental Science","Chemistry"],rq:["Research","MS Excel"],pf:["Pollution Monitoring","GIS","Data Analysis"],loc:"Delhi",rem:0,dur:6,cg:6.5,st:"₹14,000/mo",url:"https://cpcb.gov.in",desc:"Monitor air and water quality data."},
+{id:101,co:"Netflix India",ti:"Content Development Intern",el:["Performing Arts","Film Studies"],rq:["Research","Content Writing"],pf:["Screenwriting","Story Development","Script Analysis"],loc:"Mumbai",rem:0,dur:3,cg:5.5,st:"₹20,000/mo",url:"https://jobs.netflix.com",desc:"Assist in content development for Netflix India originals."},
+{id:102,co:"Disney+ Hotstar",ti:"Motion Graphics Intern",el:["Animation","Design"],rq:["After Effects","Premiere"],pf:["Cinema 4D","Blender","Illustrator"],loc:"Mumbai",rem:0,dur:3,cg:5.5,st:"₹18,000/mo",url:"https://www.hotstar.com/in/careers",desc:"Design motion graphics for marketing campaigns."},
+{id:103,co:"ISI",ti:"Statistical Research Intern",el:["Statistics","Mathematics"],rq:["R","Statistics"],pf:["Python","Bayesian Analysis","Stata"],loc:"Kolkata",rem:0,dur:6,cg:8.0,st:"₹18,000/mo",url:"https://www.isical.ac.in",desc:"Conduct statistical research at India's premier institute."},
+{id:104,co:"IDSA",ti:"Defense Studies Intern",el:["Defense Studies","Political Science"],rq:["Research","MS Office"],pf:["Policy Analysis","Geopolitics","Report Writing"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹15,000/mo",url:"https://www.idsa.in",desc:"Research defense and strategic studies."},
+{id:105,co:"Byju's",ti:"Ed-Tech Content Intern",el:["Education","Mathematics"],rq:["Content Writing","Subject Knowledge"],pf:["Video Editing","MS PowerPoint","MS Excel"],loc:"Bangalore",rem:1,dur:3,cg:6.0,st:"₹15,000/mo",url:"https://byjus.com/careers",desc:"Create educational content and interactive modules."},
+{id:106,co:"WWF India",ti:"Conservation Research Intern",el:["Environmental Science","Biology"],rq:["Research","Data Collection"],pf:["GIS","Wildlife Biology","Conservation"],loc:"Multiple Cities",rem:0,dur:6,cg:6.0,st:"₹10,000/mo",url:"https://www.wwfindia.org",desc:"Conduct biodiversity assessments and conservation research."},
+{id:107,co:"CFSL",ti:"Forensic Science Intern",el:["Forensic Science","Chemistry"],rq:["Lab Techniques","Chemistry"],pf:["DNA Analysis","Fingerprint Analysis","Digital Forensics"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹12,000/mo",url:"https://www.cfsl.gov.in",desc:"Assist in crime scene analysis and evidence testing."},
+{id:108,co:"Sports Authority of India",ti:"Sports Science Intern",el:["Physical Education","Sports Science"],rq:["Sports Training","Exercise Physiology"],pf:["Data Analysis","Nutrition","Sports Psychology"],loc:"Delhi",rem:0,dur:6,cg:6.0,st:"₹12,000/mo",url:"https://www.sportsauthorityofindia.nic.in",desc:"Assist in athlete performance analysis and research."},
+{id:109,co:"National Library",ti:"Library Science Intern",el:["Library Science","Information Science"],rq:["Library Management","Cataloging"],pf:["Digital Archives","MS Excel","Database Management"],loc:"Kolkata",rem:0,dur:3,cg:6.0,st:"₹8,000/mo",url:"https://nl.main.gov.in",desc:"Assist in cataloging and digital archiving."},
+{id:110,co:"UN Women India",ti:"Gender Research Intern",el:["Women's Studies","Sociology"],rq:["Research","MS Office"],pf:["Gender Analysis","Policy Research","Report Writing"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹16,000/mo",url:"https://india.unwomen.org",desc:"Research gender equality policies and women's empowerment."},
+{id:111,co:"NPCI",ti:"Legal & Compliance Intern",el:["Law","Finance"],rq:["Legal Research","MS Excel"],pf:["Fintech Regulations","RBI Guidelines","Compliance"],loc:"Mumbai",rem:0,dur:6,cg:7.0,st:"₹22,000/mo",url:"https://www.npci.org.in",desc:"Work on payment system regulations and compliance."},
+{id:112,co:"Myntra",ti:"Fashion Tech Intern",el:["Fashion Design","Design"],rq:["Fashion Knowledge","MS Excel"],pf:["Visual Merchandising","Trend Analysis","Photoshop"],loc:"Bangalore",rem:0,dur:4,cg:6.0,st:"₹18,000/mo",url:"https://www.myntra.com/about/careers",desc:"Combine fashion with technology for product catalog."},
+{id:113,co:"ITC Agri",ti:"Agri-Supply Chain Intern",el:["Agriculture","Food Science"],rq:["MS Excel","Analytical Thinking"],pf:["Supply Chain","SAP","Data Analysis"],loc:"Bangalore",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.itcportal.com",desc:"Optimize agricultural supply chain operations."},
+{id:114,co:"Amul",ti:"Dairy Science Intern",el:["Food Science","Agriculture"],rq:["Food Science","Lab Techniques"],pf:["Quality Control","Dairy Technology","MS Excel"],loc:"Gujarat",rem:0,dur:4,cg:6.0,st:"₹12,000/mo",url:"https://www.amul.com",desc:"Work on dairy product quality and new product development."},
+{id:115,co:"NTPC",ti:"Power Plant Chemistry Intern",el:["Chemistry","Chemical"],rq:["Chemistry","Lab Techniques"],pf:["Water Treatment","Boiler Chemistry","MS Excel"],loc:"Multiple Cities",rem:0,dur:6,cg:6.0,st:"₹15,000/mo",url:"https://www.ntpc.co.in",desc:"Perform water and boiler chemistry analysis."},
+{id:116,co:"Tata Steel Mining",ti:"Mining Engineering Intern",el:["Mining","Geology"],rq:["Mining Methods","Safety"],pf:["Ventilation","Blasting","MS Excel"],loc:"Jharkhand",rem:0,dur:6,cg:6.0,st:"₹16,000/mo",url:"https://www.tatasteel.com/careers",desc:"Assist in mining operations and safety compliance."},
+{id:117,co:"TAC Security",ti:"Ethical Hacking Intern",el:["CS/IT","Cybersecurity"],rq:["Networking","Linux"],pf:["Python","Penetration Testing","Vulnerability Assessment"],loc:"Delhi",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.tacsecurity.com",desc:"Conduct penetration testing and vulnerability assessments."},
+{id:118,co:"ASCI",ti:"Anthropology Research Intern",el:["Anthropology","Sociology"],rq:["Research","Field Work"],pf:["Ethnography","Data Collection","Report Writing"],loc:"Kolkata",rem:0,dur:6,cg:6.5,st:"₹12,000/mo",url:"https://www.ansi.gov.in",desc:"Conduct anthropological fieldwork and document cultures."},
+{id:119,co:"NDRF",ti:"Disaster Management Intern",el:["Disaster Management","Social Work"],rq:["Emergency Response","MS Office"],pf:["First Aid","Crisis Communication","Planning"],loc:"Multiple Cities",rem:0,dur:4,cg:6.0,st:"₹10,000/mo",url:"https://ndrf.gov.in",desc:"Assist in disaster preparedness and emergency response."},
+{id:120,co:"CBSE",ti:"Education Research Intern",el:["Education","Psychology"],rq:["Research","MS Office"],pf:["Curriculum Design","Assessment","Data Analysis"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹14,000/mo",url:"https://cbse.gov.in",desc:"Research education policies and curriculum development."},
+{id:121,co:"Physical Education Dept",ti:"Sports Analytics Intern",el:["Physical Education","Sports Science"],rq:["Exercise Science","Data Collection"],pf:["Wearable Tech","Performance Analytics","Coaching"],loc:"Multiple Cities",rem:0,dur:4,cg:6.0,st:"₹15,000/mo",url:"https://www.jsw.in/sports",desc:"Analyze athlete performance data for training programs."},
+{id:122,co:"ITC Hotels",ti:"Culinary Arts Intern",el:["Hotel Management"],rq:["Culinary Skills","Food Safety"],pf:["Menu Planning","Kitchen Management","HACCP"],loc:"Multiple Cities",rem:0,dur:6,cg:5.5,st:"₹10,000/mo",url:"https://www.itchotels.in",desc:"Work alongside master chefs in kitchen operations."},
+{id:123,co:"NCRB",ti:"Criminal Data Analytics Intern",el:["Forensic Science","CS/IT"],rq:["Data Analysis","MS Excel"],pf:["Python","SQL","Crime Statistics"],loc:"Delhi",rem:0,dur:4,cg:6.5,st:"₹14,000/mo",url:"https://ncrb.gov.in",desc:"Analyze criminal data and crime pattern research."},
+{id:124,co:"BSI",ti:"Botany Research Intern",el:["Biology","Environmental Science"],rq:["Research","Plant Identification"],pf:["Herbarium","Field Work","MS Excel"],loc:"Kolkata",rem:0,dur:6,cg:6.5,st:"₹12,000/mo",url:"https://bsidocuments.gov.in",desc:"Document plant species and conduct taxonomic research."},
+{id:125,co:"Quick Heal",ti:"Cloud Security Intern",el:["CS/IT","Cloud Computing"],rq:["Python","Networking"],pf:["AWS","Azure","Terraform"],loc:"Pune",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.quickheal.co.in",desc:"Develop cloud security solutions for enterprise clients."},
+{id:126,co:"TERI",ti:"Sustainability Intern",el:["Environmental Science"],rq:["Research","MS Excel"],pf:["Sustainability Reporting","Energy Analysis","Carbon Footprint"],loc:"Delhi",rem:0,dur:6,cg:7.0,st:"₹15,000/mo",url:"https://www.teriin.org",desc:"Research renewable energy and sustainability frameworks."},
+{id:127,co:"Actuarial Society",ti:"Actuarial Intern",el:["Statistics","Mathematics","Finance"],rq:["Probability","MS Excel"],pf:["R","Actuarial Modeling","Financial Mathematics"],loc:"Mumbai",rem:0,dur:6,cg:8.0,st:"₹25,000/mo",url:"https://www.actuariesindia.org",desc:"Develop actuarial models for insurance risk assessment."},
+{id:128,co:"MSME Dept",ti:"Small Business Intern",el:["Commerce","BBA","MBA"],rq:["MS Excel","Business Analysis"],pf:["Market Research","Financial Planning","MS PowerPoint"],loc:"Delhi",rem:0,dur:3,cg:6.0,st:"₹10,000/mo",url:"https://msme.gov.in",desc:"Support MSME policy research and business development."},
+{id:129,co:"Forestry Dept",ti:"Forestry Research Intern",el:["Environmental Science","Biology","Agriculture"],rq:["Field Work","Research"],pf:["GIS","Conservation","Wildlife Biology"],loc:"Multiple Cities",rem:0,dur:6,cg:6.0,st:"₹12,000/mo",url:"https://www.fsi.nic.in",desc:"Conduct forest surveys and biodiversity documentation."},
+{id:130,co:"Textile Ministry",ti:"Textile Research Intern",el:["Textile Design","Fashion Design"],rq:["Textile Knowledge","MS Excel"],pf:["Sustainable Fashion","Quality Testing","Design"],loc:"Delhi",rem:0,dur:4,cg:6.0,st:"₹10,000/mo",url:"https://textilecommittee.nic.in",desc:"Research textile standards and sustainable fashion practices."},
+{id:131,co:"GAIL",ti:"Chemical Engineering Intern",el:["Chemical","Chemistry"],rq:["Chemical Processes","Lab Techniques"],pf:["Process Simulation","MATLAB","Safety"],loc:"Multiple Cities",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.gailonline.com",desc:"Work on natural gas processing and petrochemical operations."},
+{id:132,co:"HAL",ti:"Aerospace Engineering Intern",el:["Aerospace","Mechanical"],rq:["CAD","MATLAB"],pf:["Aerodynamics","FEA","Avionics"],loc:"Bangalore",rem:0,dur:6,cg:7.0,st:"₹25,000/mo",url:"https://www.hal-india.co.in",desc:"Assist in aircraft design and aerospace component testing."},
+{id:133,co:"BHEL",ti:"Electrical Engineering Intern",el:["Electrical","Electronics"],rq:["MATLAB","Circuit Design"],pf:["Power Systems","PLC","SCADA"],loc:"Multiple Cities",rem:0,dur:6,cg:6.5,st:"₹18,000/mo",url:"https://www.bhel.com",desc:"Work on power generation equipment and electrical systems."},
+{id:134,co:"Deloitte",ti:"BBA Consulting Intern",el:["BBA","MBA","Commerce"],rq:["MS Excel","Communication"],pf:["Business Analysis","PowerPoint","SQL"],loc:"Multiple Cities",rem:0,dur:6,cg:6.5,st:"₹20,000/mo",url:"https://www.deloitte.com/in/en/careers.html",desc:"Support consulting engagements across business verticals."},
+{id:135,co:"Google",ti:"Mathematics Intern",el:["Mathematics","Statistics"],rq:["Python","Statistics"],pf:["R","SQL","Algorithm Design"],loc:"Bangalore",rem:0,dur:6,cg:8.0,st:"₹70,000/mo",url:"https://careers.google.com",desc:"Apply advanced mathematics to optimize Google products."}
+];
+
+const SKILLS={
+"CS/IT":["Python","Java","C++","JavaScript","SQL","Data Structures","React","Node.js","Git","AWS","Machine Learning","HTML","CSS","TypeScript","Docker"],
+"Electronics":["VLSI","Verilog","Embedded C","MATLAB","PCB Design","Signal Processing","C","ARM","Linux Kernel","SystemVerilog","Python","CAD"],
+"Electrical":["MATLAB","Power Systems","Simulink","PLC","SCADA","Circuit Design","Python","AutoCAD","Control Systems","Embedded C","Verilog","VLSI"],
+"Mechanical":["AutoCAD","SolidWorks","CATIA","MATLAB","ANSYS","CNC","Manufacturing","GD&T","Creo","Python","Thermodynamics","Fluid Mechanics"],
+"Civil":["AutoCAD","STAAD Pro","Revit","Structural Analysis","GIS","Project Management","ETABS","Civil 3D","MS Project","Python","Surveying","Concrete Technology"],
+"Commerce":["Accounting","Tally","SAP","Financial Analysis","MS Excel","GST","TDS","Auditing","Taxation","QuickBooks","ERP","Credit Analysis"],
+"BBA":["MS Excel","Business Analysis","Marketing","HR","PowerPoint","MS Office","Data Analysis","Project Management","Communication","Leadership","CRM","ERP"],
+"Arts":["Content Writing","English","Social Media","SEO","Copywriting","Adobe Photoshop","Video Editing","Photography","MS Word","Blogging","Social Media Marketing","Canva"],
+"Design":["Figma","Adobe XD","Illustrator","Photoshop","UI Design","Prototyping","Wireframing","Sketch","After Effects","Blender","CSS","HTML"],
+"Data Science":["Python","Machine Learning","SQL","Tableau","TensorFlow","Statistics","R","Pandas","Numpy","Power BI","Deep Learning","NLP"],
+"default":["MS Excel","Communication","Problem Solving","Teamwork","Time Management","Leadership","MS Office","Project Management","Data Analysis","Report Writing","Critical Thinking","Adaptability"],
+"MBA":["Business Analysis","PowerPoint","Financial Modeling","Data Analysis","SQL","Strategy","Marketing","MS Excel","Market Research","Leadership","Project Management","Consumer Behavior"],
+"Psychology":["Psychology","Counseling","Research","Active Listening","Behavioral Therapy","CBT","Empathy","Content Writing","Data Collection","Communication","Case Studies","Mental Health"],
+"Automobile":["AutoCAD","SolidWorks","CATIA","MATLAB","ANSYS","Vehicle Design","GD&T","NVH Analysis","Thermodynamics","Manufacturing","CAD","Prototyping"],
+"Finance":["Financial Analysis","MS Excel","Accounting","Tally","Bloomberg","Valuation","PowerPoint","SQL","Investment Banking","Portfolio Management","Risk Analysis","Regulatory Compliance"],
+"Economics":["Economic Analysis","MS Excel","Stata","R","Econometrics","Data Analysis","Research","PowerPoint","Report Writing","Python","Statistical Modeling","Policy Analysis"],
+"Chemistry":["Chemistry","Lab Techniques","HPLC","Spectroscopy","Organic Synthesis","Quality Control","MS Excel","Instrumental Analysis","Research","Safety Protocols","Analytical Chemistry","Formulation"],
+"Mass Communication":["Content Writing","Social Media","Video Editing","Journalism","English","SEO","WordPress","Photography","Copywriting","Canva","News Writing","Media Relations"],
+"Journalism":["English","Content Writing","Research","News Writing","Social Media","Video Editing","Interviewing","Fact-Checking","SEO","WordPress","Media Ethics","Broadcasting"],
+"English":["Content Writing","English","Editing","Proofreading","Creative Writing","Research","Copywriting","MS Word","Literary Analysis","Blog Writing","Communication","Storytelling"],
+"Statistics":["R","Python","SQL","Statistical Modeling","Data Analysis","Tableau","SAS","Excel","Regression Analysis","Machine Learning","Probability","Time Series"],
+"Mathematics":["Python","R","SQL","Linear Algebra","Statistics","Machine Learning","Data Analysis","MATLAB","Numerical Methods","Calculus","Optimization","Algorithm Design"],
+"Construction":["AutoCAD","Revit","BIM","Project Management","Structural Analysis","MS Project","Cost Estimation","Civil 3D","Safety Management","Quality Control","Site Supervision","Drawing"],
+"Marketing":["Digital Marketing","Social Media","Google Ads","Analytics","SEO","Content Strategy","MS Excel","PowerPoint","Market Research","Consumer Behavior","Copywriting","CRM"],
+"Public Policy":["Research","Data Analysis","MS Excel","PowerPoint","Policy Analysis","Report Writing","Stakeholder Management","R","Python","Communication","Critical Thinking","Government Systems"],
+"Agriculture":["Agronomy","Crop Science","Soil Science","Agricultural Economics","Irrigation","Pest Management","Organic Farming","Farm Management","GIS","Agricultural Engineering","Biology","MS Excel"],
+"Food Science":["Food Chemistry","Nutrition","Food Safety","HACCP","Quality Control","Lab Techniques","Food Processing","Dairy Science","Microbiology","MS Excel","Research","Packaging"],
+"Law":["Legal Research","Contract Drafting","Corporate Law","Constitutional Law","Criminal Law","MS Word","Argumentation","Legal Writing","Intellectual Property","Court Procedures","Compliance","Negotiation"],
+"Nursing":["Clinical Skills","Patient Care","Medical Terminology","First Aid","Documentation","Pharmacology","Vital Signs","Wound Care","Communication","Empathy","Health Assessment","Sterilization"],
+"Physiotherapy":["Physiotherapy","Exercise Therapy","Rehabilitation","Manual Therapy","Anatomy","Patient Assessment","Electrotherapy","Sports Injury","Hydrotherapy","MS Office","Communication","Empathy"],
+"BCA":["JavaScript","HTML","CSS","Python","SQL","React","Node.js","Git","Java","Database Management","Web Development","MS Office"],
+"MCA":["Python","Java","SQL","Data Structures","Web Development","Cloud Computing","Machine Learning","Linux","Docker","REST APIs","Angular","React"],
+"Physical Education":["Sports Training","Exercise Physiology","Anatomy","Nutrition","Coaching","Sports Psychology","Fitness Testing","Yoga","First Aid","Leadership","Event Management","MS Office"],
+"Library Science":["Library Management","Cataloging","Digital Archives","MS Excel","Database Management","Research","Reference Services","Classification","Bibliography","Information Retrieval","Web Services","Automation"],
+"Fine Arts":["Painting","Sculpture","Art History","Photography","Adobe Photoshop","Illustrator","Drawing","Mixed Media","Exhibition Design","Portfolio Development","Visual Communication","Creativity"],
+"Graphic Design":["Adobe Photoshop","Illustrator","InDesign","Typography","Brand Design","UI Design","Figma","Canva","Layout Design","Color Theory","Motion Graphics","Print Design"],
+"Interior Design":["AutoCAD","SketchUp","Revit","3D Visualization","Space Planning","Vastu","Color Theory","Materials","Furniture Design","Lighting","Photoshop","Project Management"],
+"Fashion Design":["Fashion Sketching","Adobe Illustrator","Pattern Making","Textile Design","Fashion History","Sewing","Draping","CAD","Sustainability","Merchandising","Trend Analysis","Photoshop"],
+"Performing Arts":["Acting","Direction","Script Writing","Stage Design","Voice Modulation","Theatre","Performance","Script Analysis","Character Development","Improvisation","Production","Communication"],
+"Film Studies":["Screenwriting","Film Analysis","Cinematography","Direction","Editing","Sound Design","Film History","Documentary","Adobe Premiere","After Effects","Story Development","Cultural Studies"],
+"Animation":["After Effects","Maya","Blender","3D Modeling","Rigging","Storyboarding","Illustration","Cinema 4D","Character Design","2D Animation","Motion Graphics","Photoshop"],
+"VFX":["After Effects","Nuke","Maya","Houdini","Compositing","Roto","Matchmoving","3D Modeling","Photoshop","Premiere Pro","Fusion","Particle Systems"],
+"Environmental Science":["Environmental Impact Assessment","Pollution Control","GIS","Remote Sensing","Environmental Law","Sustainability","Water Management","Air Quality","Research","MS Excel","Data Analysis","Conservation"],
+"Forensic Science":["Forensic Chemistry","DNA Analysis","Fingerprint Analysis","Ballistics","Lab Techniques","Cyber Forensics","Toxicology","Evidence Collection","Documentation","Microscopy","Spectroscopy","MS Excel"],
+"Social Work":["Community Development","Counseling","Social Research","Empathy","Case Management","NGO Management","Advocacy","Field Work","Communication","Report Writing","Program Management","Empowerment"],
+"Hotel Management":["Food & Beverage","Front Office","Housekeeping","Revenue Management","Customer Service","Event Planning","Culinary Skills","Tourism","Marketing","MS Excel","Communication","Leadership"],
+"Tourism":["Tourism Management","Travel Planning","Hospitality","Marketing","Cultural Heritage","MS Excel","Communication","Event Planning","Digital Marketing","Customer Service","Geography","Language Skills"],
+"Cybersecurity":["Networking","Linux","Python","Penetration Testing","SIEM","Vulnerability Assessment","Cryptography","Firewall","Wireshark","OSCP","Incident Response","Security Auditing"],
+"Geology":["Field Work","Geological Mapping","Mineralogy","Petrology","GIS","Remote Sensing","Seismology","Rock Analysis","Cartography","MS Excel","Research","Stratigraphy"],
+"Mining":["Mining Methods","Safety Management","Ventilation","Blasting","Mine Planning","Geology","Heavy Equipment","Environmental Compliance","GIS","MS Excel","Survey","First Aid"],
+"Physics":["MATLAB","Research","Quantum Mechanics","Optics","Thermodynamics","Electromagnetism","Simulation","Computational Physics","Data Analysis","Lab Techniques","Python","R"],
+"Biology":["Lab Techniques","Microscopy","Cell Biology","Genetics","Molecular Biology","Research","Statistics","MS Excel","PCR","Microbiology","Biochemistry","Ecology"],
+"Zoology":["Biology","Ecology","Wildlife","Taxonomy","Field Work","Conservation","Research","Animal Behavior","Lab Techniques","Biodiversity","Photography","GIS"],
+"Botany":["Plant Biology","Taxonomy","Ecology","Field Work","Herbarium","Research","Conservation","Microscopy","Agriculture","Lab Techniques","MS Excel","Biodiversity"],
+"Microbiology":["Microbiology","Lab Techniques","Cell Culture","PCR","Sterile Techniques","Staining","Fermentation","Immunology","Biochemistry","MS Excel","Research","Quality Control"],
+"Actuarial Science":["Probability","Statistics","Financial Mathematics","R","MS Excel","Actuarial Modeling","Risk Analysis","Calculus","Econometrics","Python","Insurance","Pension"],
+"Architecture":["AutoCAD","Revit","SketchUp","3D Visualization","Vastu","Building Code","Structural Design","Sustainable Design","Model Making","Photoshop","BIM","Urban Planning"],
+"Sports Science":["Exercise Physiology","Biomechanics","Sports Nutrition","Performance Analysis","Coaching","Anatomy","Fitness Testing","Data Collection","Sports Psychology","First Aid","Wearable Tech","Research"],
+"Education":["Curriculum Design","Teaching","Assessment","Child Psychology","Classroom Management","MS Office","Content Writing","Educational Technology","Communication","Patience","Research","Leadership"],
+"Disaster Management":["Emergency Response","First Aid","Risk Assessment","Crisis Communication","Disaster Planning","MS Excel","Relief Operations","GPS","Communication","Leadership","Field Work","Documentation"],
+"Defense Studies":["Geopolitics","Strategic Studies","Defense Policy","Research","International Relations","Security Studies","Report Writing","MS Office","Analytical Thinking","History","Policy Analysis","Critical Thinking"],
+"Anthropology":["Ethnography","Field Work","Research","Cultural Analysis","Linguistics","Survey","Documentation","MS Office","Social Research","Report Writing","Photography","Communication"],
+"Archaeology":["Excavation","Archaeological Survey","Artifact Analysis","Dating Methods","Research","MS Office","GIS","Field Work","Pottery Analysis","Documentation","Drawing","Conservation"],
+"Women's Studies":["Gender Studies","Research","Social Policy","Feminism","Data Analysis","MS Office","Report Writing","Advocacy","Communication","Empowerment","Field Work","Cultural Studies"],
+"Public Administration":["Governance","Policy Analysis","Public Finance","MS Excel","Administration","Leadership","Report Writing","Communication","Urban Planning","HR Management","Ethics","Data Analysis"]
+};
+
+/* ── Matching ── */
+const WS=30,WK=30,WCG=15,WL=15,WC=10;
+function match(i,p){
+    const rsn=[],wrn=[];
+    let s1=0;const ps=p.stream.toLowerCase(),el=i.el.map(s=>s.toLowerCase());
+    if(el.includes(ps)){s1=100;rsn.push(`Your stream (${p.stream}) is eligible`)}
+    else{const pw=ps.split(/\s*\/\s*|\s+/);const has=i.el.some(e=>{const ew=e.toLowerCase().split(/\s*\/\s*|\s+/);return pw.some(x=>ew.includes(x))});if(has){s1=60;rsn.push("Partial stream match")}else{wrn.push(`Stream "${p.stream}" not listed as eligible`);s1=0}}
+    let s2=0;const sl=p.skills.map(s=>s.toLowerCase());
+    const mr=i.rq.filter(r=>sl.includes(r.toLowerCase())),mp=i.pf.filter(x=>sl.includes(x.toLowerCase()));
+    s2+=(i.rq.length>0?mr.length/i.rq.length*70:70)+(i.pf.length>0?mp.length/i.pf.length*30:30);s2=Math.min(s2,100);
+    if(mr.length>0)rsn.push(`Matches required: ${mr.join(", ")}`);
+    if(mp.length>0)rsn.push(`Matches preferred: ${mp.join(", ")}`);
+    const miss=i.rq.filter(x=>!sl.includes(x.toLowerCase()));if(miss.length>0)wrn.push(`Missing required: ${miss.join(", ")}`);
+    let s3=60;if(p.cgpa>0){if(p.cgpa>=i.cg){s3=100;rsn.push(`CGPA (${p.cgpa}) meets min (${i.cg})`)}else{const g=i.cg-p.cgpa;s3=Math.max(0,(1-g/3))*40;wrn.push(`CGPA (${p.cgpa}) below min (${i.cg})`)}}else rsn.push("CGPA not provided");
+    let s4=100;if(i.rem&&p.remoteOk){rsn.push("Remote-friendly match");s4=100}else if(!p.loc||p.loc==="Any"){rsn.push("No location preference");s4=100}else if(i.loc.toLowerCase().includes(p.loc.toLowerCase())||p.loc.toLowerCase().includes(i.loc.toLowerCase())){rsn.push(`Location match: ${i.loc}`);s4=100}else if(i.loc.toLowerCase().includes("multiple")){rsn.push("Multiple locations available");s4=70}else{wrn.push(`Location mismatch: prefer "${p.loc}", this is "${i.loc}"`);s4=20}
+    let s5=80;if(p.dur>0){const d=Math.abs(i.dur-p.dur);if(d===0){rsn.push(`Duration matches (${i.dur}mo)`);s5=90}else if(d===1){rsn.push(`Duration close (${i.dur} vs ${p.dur}mo)`);s5=85}else{wrn.push(`Duration is ${i.dur}mo (preferred ${p.dur})`);s5=60}}
+    const score=Math.round((s1*WS+s2*WK+s3*WCG+s4*WL+s5*WC)/100);
+    return{i,r:rsn,w:wrn,s:score};
+}
+function find(p,n=10){const res=DB.map(x=>match(x,p));res.sort((a,b)=>b.s-a.s);return res.slice(0,n)}
+function sc(s){return s>=75?"sc":s>=50?"sg":s>=30?"sf":"sl"}
+function sl(s){return s>=75?"Excellent":s>=50?"Good":s>=30?"Fair":"Low"}
+
+/* ── UI ── */
+document.getElementById('stream').onchange=function(){
+    const g=document.getElementById('skillsGrid'),sk=SKILLS[this.value]||SKILLS.default;
+    g.innerHTML='';sk.forEach(s=>{const c=document.createElement('span');c.className='sk'+(selSkills.includes(s)?' sel':'');c.innerHTML=`<span class="ck">✓</span> ${s}`;c.onclick=()=>toggleSk(s,c);g.appendChild(c)});
+};
+function toggleSk(s,c){if(selSkills.includes(s)){selSkills=selSkills.filter(x=>x!==s);c.classList.remove('sel')}else{selSkills.push(s);c.classList.add('sel')}renderSk()}
+function addCustomSkill(){const v=document.getElementById('customSkill').value.trim();if(v&&!selSkills.includes(v)){selSkills.push(v);renderSk();document.getElementById('customSkill').value=''}}
+document.getElementById('customSkill').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();addCustomSkill()}}
+function rmSk(s){selSkills=selSkills.filter(x=>x!==s);renderSk();document.querySelectorAll('.sk').forEach(c=>{if(c.textContent.trim().endsWith(s))c.classList.remove('sel')})}
+function renderSk(){document.getElementById('selectedSkills').innerHTML=selSkills.map(s=>`<span class="sel-tag">${s} <span class="rm" onclick="rmSk('${s}')">×</span></span>`).join('')}
+document.getElementById('cgpa').oninput=function(){const v=parseFloat(this.value),h=document.getElementById('cgpaHint');if(isNaN(v)){h.textContent='';return}h.textContent=v>=8.5?'🟢 Excellent — qualifies for top-tier internships':v>=7?'🟡 Good — opens most opportunities':v>=6?'🟠 Average — focus on skills & projects':'🔴 Below 6 — build skills & projects to compensate'};
+
+/* ── Submit ── */
+document.getElementById('profileForm').onsubmit=function(e){
+    e.preventDefault();
+    const nm=document.getElementById('name').value.trim(),em=document.getElementById('email').value.trim(),st=document.getElementById('stream').value,cg=parseFloat(document.getElementById('cgpa').value)||0,loc=document.getElementById('location').value,ro=document.getElementById('remoteOk').checked,dur=parseInt(document.getElementById('duration').value)||0;
+    if(!nm||!st){alert('Please fill in name and stream.');return}
+    if(!selSkills.length){alert('Please select at least one skill.');return}
+    const p={name:nm,email:em,phone:document.getElementById('phone').value.trim(),stream:st,college:document.getElementById('college').value.trim(),gradYear:parseInt(document.getElementById('gradYear').value)||2026,cgpa:cg,skills:selSkills,location:loc,remoteOk:ro,dur};
+    saveStudentProfileToSupabase(p);
+    const b=document.getElementById('findBtn');b.querySelector('.btn-t').style.display='none';b.querySelector('.btn-l').style.display='inline-flex';b.disabled=true;
+    setTimeout(()=>{
+        curRes=find(p,10);curProfile=p;showRes(p,curRes);
+        window.IVSupabase.saveSearchHistory({profile:p,results:curRes.map(r=>({company:r.i.co,role:r.i.ti,score:r.s}))});
+        b.querySelector('.btn-t').style.display='inline';b.querySelector('.btn-l').style.display='none';b.disabled=false;
+    },600);
+};
+
+/* ── Show Results ── */
+function showRes(p,res){
+    const sec=document.getElementById('resultsSection');sec.style.display='block';
+    setTimeout(()=>sec.scrollIntoView({behavior:'smooth'}),100);
+    document.getElementById('resultsSummary').innerHTML=`Found <strong>${res.length} internships</strong> matched for <strong>${p.name}</strong> (${p.stream})`;
+    // Agent Dashboard HTML
+    document.getElementById('agentDashboard').innerHTML = `
+        <div class="agent-bar">
+            <div class="agent-status"><div class="agent-dot"></div> Agent Active</div>
+            <div style="font-size:.85rem;color:var(--t2)">Auto-applying to top matches...</div>
+            <div class="agent-stats" id="agentStats"></div>
+        </div>
+        <div class="timeline" id="agentTimeline"></div>
+        <div id="callReadySection"></div>
+    `;
+    document.getElementById('agentDashboard').style.display = 'block';
+    // Start agent
+    setTimeout(() => runAgent(p, res), 500);
+    const great=res.filter(x=>x.s>=75).length,avg=res.length?Math.round(res.reduce((a,b)=>a+b.s,0)/res.length):0;
+    document.getElementById('resultsOverview').innerHTML=`<div class="ov-stat"><div class="big">${res.length}</div><div class="lbl">Matches</div></div><div class="ov-stat"><div class="big">${great}</div><div class="lbl">Excellent</div></div><div class="ov-stat"><div class="big">${avg}%</div><div class="lbl">Avg Score</div></div><div class="ov-stat"><div class="big">${res[0]?.s||0}%</div><div class="lbl">Best Match</div></div>`;
+    const g=document.getElementById('matchesGrid');g.innerHTML='';
+    res.forEach((r,idx)=>{
+        const i=r.i,c=sc(r.s),card=document.createElement('div');
+        card.className=`mc ${c}`;card.style.animationDelay=`${idx*.08}s`;card.style.animation='fadeUp .5s ease forwards';card.style.opacity='0';
+        card.onclick=()=>card.classList.toggle('exp');
+        card.innerHTML=`<div class="mc-hdr"><div class="mc-hdr-l"><span class="mc-co">${i.co}</span><h3>${i.ti}</h3></div><div class="mc-hdr-r"><div class="mc-scr ${c}">${r.s}%</div><div class="mc-lbl">${sl(r.s)} Match</div></div></div><div class="sb-wrap"><div class="sb"><div class="sb-fill ${c}" style="width:0%"></div></div></div><div class="mc-meta"><span>📍 ${i.loc}${i.rem?' (Remote)':''}</span><span>⏱ ${i.dur} months</span><span>💰 ${i.st}</span></div><div class="mc-desc">${i.desc}</div><div class="mc-det"><div class="mc-skills">${i.rq.map(x=>`<span class="stag rq">${x}</span>`).join('')}${i.pf.map(x=>`<span class="stag pf">${x}</span>`).join('')}</div><div class="mc-reasons">${r.r.map(x=>`<div class="r">✅ ${x}</div>`).join('')}${r.w.map(x=>`<div class="w">⚠️ ${x}</div>`).join('')}</div><div class="mc-foot"><a href="${i.url}" target="_blank" class="mc-url" onclick="event.stopPropagation()">🔗 Apply</a><span class="mc-elig">Eligible: ${i.el.join(", ")} | Min CGPA: ${i.cg}</span></div></div><div class="exp-hint">Click to expand</div>
+        <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn-sm" onclick="event.stopPropagation();openEmailModal(curProfile,DB.find(x=>x.id===${i.id}))" style="font-size:.85rem;padding:.45rem 1rem">📧 Generate Email</button>
+            <button class="btn-sm" onclick="event.stopPropagation();openResumeModal(curProfile,DB.find(x=>x.id===${i.id}))" style="font-size:.85rem;padding:.45rem 1rem;background:linear-gradient(135deg,#7c3aed,#a855f7)">📄 Resume & Cover Letter</button>
+        </div>`;
+        g.appendChild(card);
+    });
+    setTimeout(()=>{document.querySelectorAll('.sb-fill').forEach((b,i)=>{b.style.width=res[i].s+'%'})},300);
+    showTips(res);
+}
+function showTips(res){
+    const tips=[],miss=new Set();
+    res.forEach(r=>r.w.forEach(w=>{if(w.startsWith('Missing required:'))w.replace('Missing required: ','').split(', ').forEach(s=>miss.add(s))}));
+    if(miss.size)tips.push({i:'📚',t:`Consider learning: ${[...miss].join(", ")}`,w:1});
+    if(res.some(r=>r.w.some(w=>w.includes('CGPA'))))tips.push({i:'📊',t:'CGPA below some requirements — compensate with strong skills & projects.',w:1});
+    tips.push({i:'🎯',t:'Apply to at least 10-15 internships for the best chances.'});
+    tips.push({i:'📝',t:'Customize your resume for each application — highlight relevant skills.'});
+    tips.push({i:'🔗',t:'Connect with employees on LinkedIn before applying for referrals.'});
+    tips.push({i:'💡',t:'Build 2-3 projects demonstrating the skills in job descriptions.'});
+    document.getElementById('tipsContent').innerHTML=tips.map(t=>`<div class="tip${t.w?' warn':''}"><span class="tip-ico">${t.i}</span><span>${t.t}</span></div>`).join('');
+}
+
+function exportResults(){
+    if(!curRes.length)return;const nm=document.getElementById('name').value||'Student',st=document.getElementById('stream').value;
+    let t='='.repeat(60)+'\n  internVerse — Internship Matches\n  For: '+nm+' | Stream: '+st+'\n'+'='.repeat(60)+'\n\n';
+    curRes.forEach((r,idx)=>{const i=r.i;t+=`#${idx+1}  ${i.co} — ${i.ti}  (Score: ${r.s}%)\n    ${i.desc}\n    📍 ${i.loc} | ⏱ ${i.dur}mo | 💰 ${i.st}\n    🔗 ${i.url}\n    Required: ${i.rq.join(", ")}\n    Preferred: ${i.pf.join(", ")}\n    Reasons: ${r.r.join("; ")}\n`;if(r.w.length)t+=`    Warnings: ${r.w.join("; ")}\n`;t+='\n'});
+    t+='Generated by internVerse 🎓\n';
+    const b=new Blob([t],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`internverse_${nm.replace(/\s+/g,'_').toLowerCase()}.txt`;a.click();URL.revokeObjectURL(u);
+}
+function resetForm(){document.getElementById('resultsSection').style.display='none';document.getElementById('formSection').scrollIntoView({behavior:'smooth'})}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   EMAIL DRAFT GENERATOR
+   ══════════════════════════════════════════════════════════════════════════════ */
+let emailProfile={}, emailInternship={}, currentEmailIdx=0, emailDrafts=[];
+
+function generateEmails(profile, internship) {
+    emailProfile = profile;
+    emailInternship = internship;
+    emailDrafts = [];
+    const name = profile.name;
+    const stream = profile.stream;
+    const skills = profile.skills;
+    const college = profile.college || 'my college';
+    const cgpa = profile.cgpa;
+    const co = internship.co;
+    const ti = internship.ti;
+    const desc = internship.desc;
+    const rq = internship.rq;
+    const pf = internship.pf;
+    const skillLine = skills.slice(0, 4).join(', ');
+    const skillMatch = rq.filter(r => skills.map(s=>s.toLowerCase()).includes(r.toLowerCase()));
+    const skillText = skillMatch.length > 0 ? skillMatch.join(', ') : skills.slice(0, 3).join(', ');
+
+    // ── Formal Email ─`
+    emailDrafts.push({
+        label: '📝 Formal',
+        subject: `Application for ${ti} — ${name}`,
+        body: `Dear Hiring Manager,\n\nI am writing to express my keen interest in the ${ti} position at ${co}. As a ${stream} student at ${college}${cgpa > 0 ? ` with a CGPA of ${cgpa}` : ''}, I am excited about the opportunity to contribute to your team.\n\n${desc} This role aligns perfectly with my academic background and career aspirations.\n\nMy skills in ${skillText} make me a strong candidate for this position. I have worked on projects that demonstrate practical application of these skills, and I am eager to bring this experience to ${co}.\n\nI am a quick learner, a strong team player, and deeply motivated to make an impact in a dynamic environment like ${co}. I am confident that my technical foundation and passion for learning will enable me to add value to your team.\n\nI have attached my resume for your review. I would welcome the opportunity to discuss how my background and skills align with your requirements.\n\nThank you for considering my application. I look forward to hearing from you.\n\nBest regards,\n${name}\n${college}\n${profile.email}${profile.phone ? '\n' + profile.phone : ''}`
+    });
+
+    // ── Concise Email ──
+    emailDrafts.push({
+        label: '⚡ Concise',
+        subject: `${ti} Application — ${name}`,
+        body: `Hi Team ${co},\n\nI'm ${name}, a ${stream} student at ${college}, and I'm interested in the ${ti} role.\n\n${desc}\n\nI bring hands-on experience with ${skillText} and have worked on projects applying these skills in real-world scenarios. ${cgpa >= 7 ? `My CGPA of ${cgpa} reflects my strong academic foundation.` : ''}\n\nI'd love to discuss how I can contribute to your team. My resume is attached for your reference.\n\nThanks,\n${name}\n${profile.email}`
+    });
+
+    // ── Skills-Focused Email ──
+    const skillDetails = skills.slice(0, 5).map(s => {
+        const isRequired = rq.some(r => r.toLowerCase() === s.toLowerCase());
+        return `${s}${isRequired ? ' (required for this role)' : ''}`;
+    }).join(', ');
+    emailDrafts.push({
+        label: '🛠️ Skills-Focused',
+        subject: `${ti} — ${stream} Student with ${skills[0]} Experience`,
+        body: `Dear ${co} Recruitment Team,\n\nI am applying for the ${ti} position. As a ${stream} student at ${college}, I have developed strong proficiency in: ${skillDetails}.\n\n${desc}\n\nWhat sets me apart:${skills.slice(0,3).map(s => `\n  • Strong practical experience in ${s}`).join('')}${cgpa >= 7 ? `\n  • Consistent academic excellence (CGPA: ${cgpa})` : ''}\n  • Passion for ${stream.toLowerCase()} and continuous learning\n\nI am confident these skills and my enthusiasm make me a strong fit for this internship at ${co}. I would appreciate the opportunity to discuss my candidacy further.\n\n regards,\n${name}\n${profile.email}${profile.phone ? ' | ' + profile.phone : ''}`
+    });
+
+    // ── Referral-style Email ──
+    emailDrafts.push({
+        label: '🤝 Referral-Style',
+        subject: `Interest in ${ti} at ${co} — Referral from ${college}`,
+        body: `Hello,\n\nI'm ${name}, currently pursuing ${stream} at ${college}. I came across the ${ti} opportunity at ${co} and was immediately drawn to it.\n\n${desc}\n\nWith my background in ${skillText}${cgpa >= 7 ? ` and a CGPA of ${cgpa}` : ''}, I believe I can make meaningful contributions to your team. I am particularly excited about ${co}'s work and would love the chance to learn from your experienced professionals.\n\nWould it be possible to connect with someone on the ${co} team to learn more about this role? I've attached my resume for your reference.\n\nLooking forward to your response.\n\nWarm regards,\n${name}\n${college}\n${profile.email}`
+    });
+
+    return emailDrafts;
+}
+
+function openEmailModal(profile, internship) {
+    generateEmails(profile, internship);
+    currentEmailIdx = 0;
+    document.getElementById('modalTitle').textContent = `📧 Email for ${internship.co} — ${internship.ti}`;
+    const tabs = document.getElementById('emailTabs');
+    tabs.innerHTML = emailDrafts.map((d, i) =>
+        `<button class="email-tab${i===0?' active':''}" onclick="switchEmail(${i})">${d.label}</button>`
+    ).join('');
+    renderEmail(0);
+    document.getElementById('emailModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('emailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEmailModal();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeEmailModal();
+});
+
+function switchEmail(idx) {
+    currentEmailIdx = idx;
+    document.querySelectorAll('.email-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    renderEmail(idx);
+}
+
+function renderEmail(idx) {
+    const d = emailDrafts[idx];
+    const preview = document.getElementById('emailPreview');
+    const subjectLine = `<span class="highlight">Subject:</span> ${d.subject}\n\n`;
+    preview.innerHTML = subjectLine + d.body.replace(/\n/g, '<br>');
+}
+
+function copyEmail() {
+    const d = emailDrafts[currentEmailIdx];
+    const fullEmail = `Subject: ${d.subject}\n\n${d.body}`;
+    navigator.clipboard.writeText(fullEmail).then(() => {
+        showToast('✅ Email copied to clipboard!');
+    }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = fullEmail; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('✅ Email copied to clipboard!');
+    });
+}
+
+function downloadEmail() {
+    const d = emailDrafts[currentEmailIdx];
+    const content = `Subject: ${d.subject}\n\n${d.body}\n\n---\nGenerated by internVerse 🎓`;
+    const blob = new Blob([content], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `email_${emailInternship.co.toLowerCase().replace(/\s+/g,'_')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('💾 Email downloaded!');
+}
+
+function openMailClientFromEmail() {
+    const d = emailDrafts[currentEmailIdx];
+    if (!d) return;
+    const mailto = `mailto:?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
+    window.open(mailto, '_blank');
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RESUME BULLET POINTS & COVER LETTER GENERATOR
+   ══════════════════════════════════════════════════════════════════════════════ */
+let rlData = [], rlIdx = 0, rlIntern = {};
+
+function skillCategory(s) {
+    const sl = s.toLowerCase();
+    const cats = {
+        programming: ['python','java','c++','javascript','typescript','c','c#','go','r','php','ruby','swift','kotlin'],
+        web: ['html','css','react','node.js','angular','vue','next.js','bootstrap','sass','tailwind','graphql','rest apis'],
+        data: ['sql','tableau','power bi','excel','pandas','numpy','r','stata','sas','spark','hadoop','etl'],
+        ml: ['machine learning','deep learning','tensorflow','pytorch','nlp','keras','scikit-learn','computer vision'],
+        design: ['figma','adobe xd','illustrator','photoshop','ui design','prototyping','sketch','wireframing','canva'],
+        engineering: ['autocad','solidworks','catia','matlab','ansys','cnc','plc','scada','verilog','vlsi'],
+        business: ['ms excel','powerpoint','financial analysis','accounting','marketing','business analysis','project management','crm','tally','sap'],
+        soft: ['communication','leadership','teamwork','problem solving','critical thinking','adaptability','time management','presentation'],
+        writing: ['content writing','seo','copywriting','social media','english','technical writing','blog writing'],
+        science: ['pharmacology','cell culture','molecular biology','hplc','spectroscopy','lab techniques','clinical research']
+    };
+    for (const [cat, words] of Object.entries(cats)) {
+        if (words.some(w => sl.includes(w))) return cat;
+    }
+    return 'general';
+}
+
+function generateBullets(profile, internship) {
+    const sk = profile.skills;
+    const rq = internship.rq;
+    const pf = internship.pf;
+    const co = internship.co;
+    const ti = internship.ti;
+    const matched = sk.filter(s => rq.some(r => r.toLowerCase() === s.toLowerCase()));
+    const prefMatched = sk.filter(s => pf.some(p => p.toLowerCase() === s.toLowerCase()));
+    const allMatch = [...new Set([...matched, ...prefMatched])];
+    const bullets = [];
+
+    // Skill-based bullets
+    allMatch.forEach(s => {
+        const cat = skillCategory(s);
+        const templates = {
+            programming: `Developed and maintained applications using ${s}, implementing clean architecture and best practices for code quality and maintainability`,
+            web: `Built responsive web interfaces with ${s}, focusing on performance optimization and cross-browser compatibility`,
+            data: `Analyzed and processed datasets using ${s}, creating actionable insights through statistical analysis and data visualization`,
+            ml: `Implemented ${s} models and algorithms, conducting experiments and evaluating performance metrics for prediction accuracy`,
+            design: `Designed user interfaces and prototypes using ${s}, applying user-centered design principles to improve usability and engagement`,
+            engineering: `Utilized ${s} for design simulation and analysis, ensuring compliance with industry standards and specifications`,
+            business: `Applied ${s} skills to analyze business processes and deliver data-driven recommendations for operational improvement`,
+            writing: `Created high-quality content using ${s}, ensuring accuracy, clarity, and engagement across multiple platforms`,
+            science: `Conducted experiments and research using ${s}, maintaining strict quality standards and documentation protocols`,
+            soft: `Demonstrated strong ${s} abilities in team projects, contributing to effective collaboration and project delivery`
+        };
+        bullets.push(templates[cat] || `Applied ${s} knowledge in academic and project work, demonstrating proficiency and practical understanding`);
+    });
+
+    // Role-specific bullets
+    const roleTemplates = [
+        `Collaborated with cross-functional teams at ${co} to deliver ${ti} projects on time and within scope`,
+        `Conducted research and analysis to support ${co}'s ${ti} objectives, contributing to evidence-based decision making`,
+        `Participated in agile development workflows, contributing to sprint planning, code reviews, and iterative improvement`,
+        `Presented project findings and recommendations to stakeholders, demonstrating strong communication and analytical skills`,
+        `Documented technical processes and created knowledge base articles to support team onboarding and knowledge transfer`
+    ];
+    bullets.push(roleTemplates[0]);
+    bullets.push(roleTemplates[1]);
+
+    // CGPA bullet if strong
+    if (profile.cgpa >= 8.0) {
+        bullets.push(`Maintained academic excellence with a CGPA of ${profile.cgpa}/10 in ${profile.stream} at ${profile.college || 'university'}`);
+    }
+
+    return bullets.slice(0, 7);
+}
+
+function generateCoverLetter(profile, internship, style) {
+    const n = profile.name;
+    const s = profile.stream;
+    const c = profile.college || 'my university';
+    const g = profile.cgpa;
+    const sk = profile.skills;
+    const co = internship.co;
+    const ti = internship.ti;
+    const desc = internship.desc;
+    const rq = internship.rq;
+    const matched = sk.filter(sk2 => rq.some(r => r.toLowerCase() === sk2.toLowerCase()));
+    const skillLine = matched.length > 0 ? matched.join(', ') : sk.slice(0, 4).join(', ');
+    const firstSkill = matched.length > 0 ? matched[0] : sk[0];
+    const secondSkill = matched.length > 1 ? matched[1] : sk[1] || sk[0];
+
+    if (style === 'formal') {
+        return `<span class="cl-name">${n}</span>\n${profile.email}${profile.phone ? ' | ' + profile.phone : ''}\n\nHiring Manager\n<span class="cl-company">${co}</span>\n\nRe: <span class="cl-role">${ti}</span> Internship Application\n\nDear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the <span class="cl-role">${ti}</span> position at <span class="cl-company">${co}</span>. As a ${s} student at ${c}${g > 0 ? ` with a CGPA of ${g}` : ''}, I am eager to contribute my skills and passion to your team.\n\n${desc} This opportunity aligns perfectly with my academic background and career goals.\n\nMy technical expertise in ${skillLine} positions me well for this role. Through academic projects and hands-on experience, I have developed strong proficiency in ${firstSkill} and ${secondSkill}, which I am confident will enable me to make meaningful contributions to ${co}.\n\nKey highlights of my profile:\n${rq.map(r => `  \u2022 Proficiency in ${r}${matched.includes(r) ? ' (demonstrated)' : ''}`).join('\n')}\n${g >= 7 ? `  \u2022 Strong academic record: CGPA ${g}/10` : ''}\n  \u2022 Passionate about ${s.toLowerCase()} and continuous learning\n\nI am particularly drawn to ${co} because of its reputation for innovation and excellence in the industry. I am confident that my combination of technical skills, academic foundation, and enthusiasm would make me a valuable addition to your team.\n\nI would welcome the opportunity to discuss how my background and skills align with your requirements. I have attached my resume for your detailed review.\n\nThank you for considering my application. I look forward to your positive response.\n\nSincerely,\n<span class="cl-name">${n}</span>`;
+    }
+
+    if (style === 'concise') {
+        return `<span class="cl-name">${n}</span> | ${profile.email}\n\nDear <span class="cl-company">${co}</span> Team,\n\nI'm ${n}, a ${s} student${g > 0 ? ` (CGPA: ${g})` : ''} at ${c}, and I'm excited to apply for the <span class="cl-role">${ti}</span> internship.\n\n${desc}\n\nWith hands-on experience in ${skillLine}, I bring both technical ability and a drive to learn. I'm particularly drawn to ${co}'s innovative approach and would love to contribute to your team's success.\n\nI'd appreciate the chance to discuss how I can add value. Resume attached for your review.\n\nBest,\n<span class="cl-name">${n}</span>`;
+    }
+
+    if (style === 'story') {
+        return `Dear <span class="cl-company">${co}</span> Hiring Team,\n\nWhen I first started learning ${s.toLowerCase()}, I never imagined it would lead me to apply for the <span class="cl-role">${ti}</span> role at <span class="cl-company">${co}</span> \u2014 a company I've long admired for its impact.\n\nMy journey in ${s.toLowerCase()} began at ${c}, where${g > 0 ? ` I've maintained a CGPA of ${g}` : ' I have been passionate about learning'}. Through projects and self-driven learning, I've built skills in ${skillLine} that I'm eager to put to practical use.\n\n${desc}\n\nWhat excites me most about this opportunity is the chance to work alongside talented professionals at ${co} while contributing to meaningful projects. I believe my ${firstSkill} skills, combined with my ${secondSkill} knowledge and strong work ethic, would make me a valuable team member.\n\nI've attached my resume and would love the opportunity to discuss how my background aligns with your team's needs.\n\nWarm regards,\n<span class="cl-name">${n}</span>`;
+    }
+
+    // referral style
+    return `<span class="cl-name">${n}</span>\n${profile.email}\n\nHello,\n\nI'm ${n}, a ${s} student at ${c}, reaching out regarding the <span class="cl-role">${ti}</span> position at <span class="cl-company">${co}</span>.\n\n${desc}\n\nWith my experience in ${skillLine}${g > 0 ? ` and a CGPA of ${g}` : ''}, I believe I could be a strong fit. I'm highly motivated and excited about the opportunity to learn from ${co}'s talented team.\n\nWould anyone on your team be available for a brief conversation about this role? I've attached my resume for reference.\n\nThank you for your time.\n\nBest regards,\n<span class="cl-name">${n}</span>`;
+}
+
+function openResumeModal(profile, internship) {
+    rlIntern = internship;
+    rlIdx = 0;
+
+    const bullets = generateBullets(profile, internship);
+    const coverFormal = generateCoverLetter(profile, internship, 'formal');
+    const coverConcise = generateCoverLetter(profile, internship, 'concise');
+    const coverStory = generateCoverLetter(profile, internship, 'story');
+    const coverReferral = generateCoverLetter(profile, internship, 'referral');
+
+    // Skill match visualization
+    const allReqSkills = [...new Set([...internship.rq, ...internship.pf])];
+    const studentLower = profile.skills.map(s => s.toLowerCase());
+    const skillMatchHTML = allReqSkills.map(s => {
+        const have = studentLower.includes(s.toLowerCase());
+        return `<div class="skill-match-item ${have ? 'have' : 'miss'}"><span class="sm-icon">${have ? '✅' : '⚠️'}</span> ${s}</div>`;
+    }).join('');
+
+    rlData = [
+        {
+            label: '📋 Resume Bullets',
+            content: `<div class="resume-section"><h4>Resume Bullet Points — Tailored for ${internship.co}</h4><p style="font-size:.82rem;color:var(--t3);margin-bottom:1rem">Use these bullet points in your experience/projects section. Each is customized for this ${internship.ti} role.</p><div class="skill-match-grid">${skillMatchHTML}</div>${bullets.map(b => `<div class="resume-bullet">${b}</div>`).join('')}</div>`
+        },
+        {
+            label: '📝 Formal Cover Letter',
+            content: `<div class="resume-section"><h4>Cover Letter — Formal</h4><p style="font-size:.82rem;color:var(--t3);margin-bottom:1rem">Professional format suitable for formal applications and large companies.</p></div><div class="cover-letter">${coverFormal.replace(/\n/g, '<br>')}</div>`
+        },
+        {
+            label: '⚡ Concise Cover Letter',
+            content: `<div class="resume-section"><h4>Cover Letter — Concise</h4><p style="font-size:.82rem;color:var(--t3);margin-bottom:1rem">Short and impactful — ideal for startups and fast-paced companies.</p></div><div class="cover-letter">${coverConcise.replace(/\n/g, '<br>')}</div>`
+        },
+        {
+            label: '📖 Story-Based Cover Letter',
+            content: `<div class="resume-section"><h4>Cover Letter — Story-Based</h4><p style="font-size:.82rem;color:var(--t3);margin-bottom:1rem">Tells your personal journey — makes you memorable and stands out.</p></div><div class="cover-letter">${coverStory.replace(/\n/g, '<br>')}</div>`
+        },
+        {
+            label: '🤝 Referral-Style Cover Letter',
+            content: `<div class="resume-section"><h4>Cover Letter — Referral Style</h4><p style="font-size:.82rem;color:var(--t3);margin-bottom:1rem">Conversational tone — great for LinkedIn outreach or networking.</p></div><div class="cover-letter">${coverReferral.replace(/\n/g, '<br>')}</div>`
+        }
+    ];
+
+    document.getElementById('rlModalTitle').textContent = `📄 Resume & Cover Letter — ${internship.co}`;
+    document.getElementById('rlTabs').innerHTML = rlData.map((d, i) =>
+        `<button class="rl-tab${i===0?' active':''}" onclick="switchRL(${i})">${d.label}</button>`
+    ).join('');
+    renderRL(0);
+    document.getElementById('resumeModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeResumeModal() {
+    document.getElementById('resumeModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('resumeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeResumeModal();
+});
+
+function switchRL(idx) {
+    rlIdx = idx;
+    document.querySelectorAll('.rl-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    renderRL(idx);
+}
+
+function renderRL(idx) {
+    document.getElementById('rlContent').innerHTML = rlData[idx].content;
+}
+
+function copyResumeContent() {
+    const el = document.getElementById('rlContent');
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(() => showToast('✅ Content copied to clipboard!')).catch(() => {
+        const ta = document.createElement('textarea'); ta.value = text;
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta); showToast('✅ Content copied to clipboard!');
+    });
+}
+
+function downloadResumeContent() {
+    const el = document.getElementById('rlContent');
+    const text = el.innerText;
+    const label = rlData[rlIdx].label.replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(/\s+/g, '_').toLowerCase();
+    const blob = new Blob([text + '\n\n---\nGenerated by internVerse'], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `internverse_${rlIntern.co.toLowerCase().replace(/\s+/g,'_')}_${label}.txt`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast('💾 File downloaded!');
+}
+
+function openMailClientFromResume() {
+    const el = document.getElementById('rlContent');
+    const text = el ? el.innerText : '';
+    const subject = `Application for ${rlIntern?.ti || 'Internship'} — ${curProfile?.name || 'Candidate'}`;
+    const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+    window.open(mailto, '_blank');
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AGENT WORKFLOW — Auto-Apply, Track, Notify, Prepare
+   ══════════════════════════════════════════════════════════════════════════════ */
+let agentApps=[], agentTimer=null, agentResponded=[];
+
+function runAgent(profile, matches) {
+    agentApps = [];
+    agentResponded = [];
+    const topMatches = matches.slice(0, 8);
+
+    // Show agent bar
+    const agentBar = document.getElementById('agentBar');
+    if (agentBar) agentBar.style.display = 'flex';
+
+    // Create timeline
+    const timeline = document.getElementById('agentTimeline');
+    if (!timeline) return;
+    timeline.innerHTML = '';
+
+    // Initialize all applications
+    topMatches.forEach((m, idx) => {
+        agentApps.push({
+            internship: m.i,
+            score: m.s,
+            status: 'pending',
+            step: 0,
+            applied: false,
+            communicated: false,
+            finalized: false,
+            responded: false,
+            responseMsg: ''
+        });
+        const item = createTimelineItem(m.i, m.s, idx);
+        timeline.appendChild(item);
+    });
+
+    // Animate applications one by one
+    let appIdx = 0;
+    agentTimer = setInterval(() => {
+        if (appIdx >= agentApps.length) {
+            clearInterval(agentTimer);
+            setTimeout(() => startCommunicationPhase(profile), 2000);
+            return;
+        }
+        applyToCompany(appIdx, profile);
+        appIdx++;
+    }, 1200);
+
+    updateAgentStats();
+}
+
+function createTimelineItem(internship, score, idx) {
+    const div = document.createElement('div');
+    div.className = 'tl-item';
+    div.id = `tl-${idx}`;
+    div.innerHTML = `
+        <div class="tl-dot"></div>
+        <div class="tl-co">${internship.co}</div>
+        <div class="tl-role">${internship.ti} — ${score}% match</div>
+        <div class="tl-msg" id="tl-msg-${idx}">⏳ Waiting to apply...</div>
+        <div class="tl-time" id="tl-time-${idx}"></div>
+    `;
+    return div;
+}
+
+function applyToCompany(idx, profile) {
+    const app = agentApps[idx];
+    const item = document.getElementById(`tl-${idx}`);
+    const msg = document.getElementById(`tl-msg-${idx}`);
+    const time = document.getElementById(`tl-time-${idx}`);
+    if (!item || !msg) return;
+
+    // Step 1: Preparing application
+    item.className = 'tl-item active';
+    item.querySelector('.tl-dot').textContent = '⚡';
+    msg.textContent = `🤖 Agent preparing resume for ${app.internship.co}...`;
+    msg.style.color = 'var(--acl)';
+    time.textContent = new Date().toLocaleTimeString();
+    app.status = 'preparing';
+    updateAgentStats();
+
+    // Step 2: Sending application
+    setTimeout(() => {
+        msg.innerHTML = `📤 Sending application to <strong>${app.internship.co}</strong>...`;
+        msg.style.color = 'var(--acl)';
+        updateAgentStats();
+    }, 600);
+
+    // Step 3: Application submitted
+    setTimeout(() => {
+        msg.innerHTML = `✅ Application submitted to <strong>${app.internship.co}</strong> for ${app.internship.ti}`;
+        msg.style.color = 'var(--grn2)';
+        item.className = 'tl-item done';
+        item.querySelector('.tl-dot').textContent = '✓';
+        app.status = 'applied';
+        app.applied = true;
+        updateAgentStats();
+        webTrackApp(Number(app.internship.id) || 0, app.internship.co, app.internship.ti, 'applied', app.internship.url, app.internship.st, app.internship.dur, app.internship.loc, Boolean(app.internship.rem), app.score);
+    }, 1200);
+}
+
+function startCommunicationPhase(profile) {
+    // Phase 2: Agent communicates with companies that accepted the application
+    const applied = agentApps.filter(a => a.applied);
+    applied.forEach((app, idx) => {
+        const delay = 2000 + Math.random() * 3000;
+        setTimeout(() => {
+            agentCommunicate(idx, profile);
+        }, delay * (idx + 1));
+    });
+}
+
+function agentCommunicate(idx, profile) {
+    const app = agentApps[idx];
+    if (!app || app.communicated) return;
+    const item = document.getElementById(`tl-${idx}`);
+    const msg = document.getElementById(`tl-msg-${idx}`);
+    const time = document.getElementById(`tl-time-${idx}`);
+    if (!item || !msg) return;
+
+    // Step 1: Agent sends cover letter & portfolio
+    item.className = 'tl-item active';
+    item.querySelector('.tl-dot').textContent = '💬';
+    msg.innerHTML = `🤖 Agent presenting credentials to <strong>${app.internship.co}</strong>...`;
+    msg.style.color = 'var(--cyn)';
+    updateAgentStats();
+
+    // Step 2: Follow-up email
+    setTimeout(() => {
+        msg.innerHTML = `📧 Agent conducting screening discussion with <strong>${app.internship.co}</strong> HR...`;
+        msg.style.color = 'var(--acl)';
+    }, 1500);
+
+    // Step 3: Negotiate & finalize
+    setTimeout(() => {
+        msg.innerHTML = `🤝 Agent negotiating terms & schedule with <strong>${app.internship.co}</strong>...`;
+        msg.style.color = 'var(--yel)';
+    }, 3000);
+
+    // Step 4: Get confirmation
+    setTimeout(() => {
+        const isPositive = Math.random() > 0.25;
+        if (isPositive) {
+            app.communicated = true;
+            app.finalized = true;
+            msg.innerHTML = `🎉 <strong>${app.internship.co}</strong> accepted profile! Offer details prepared for WhatsApp.`;
+            msg.style.color = 'var(--grn2)';
+            item.className = 'tl-item response';
+            item.querySelector('.tl-dot').textContent = '📞';
+            agentResponded.push(app);
+            showNotif(`🎉 ${app.internship.co} accepted! WhatsApp offer ready...`);
+            webTrackApp(Number(app.internship.id) || 0, app.internship.co, app.internship.ti, 'interviewing', app.internship.url, app.internship.st, app.internship.dur, app.internship.loc, Boolean(app.internship.rem), app.score);
+        } else {
+            app.communicated = true;
+            msg.innerHTML = `📋 <strong>${app.internship.co}</strong> — Under consideration. Agent following up.`;
+            msg.style.color = 'var(--t3)';
+        }
+        time.textContent += ' | ' + new Date().toLocaleTimeString();
+        updateAgentStats();
+
+        // When company responds positively, show full details to student
+        if (app.finalized) {
+            setTimeout(() => showCallReady(app, profile), 800);
+        }
+    }, 4500);
+}
+
+function showCallReady(app, profile) {
+    const callSection = document.getElementById('callReadySection');
+    if (!callSection) return;
+
+    const i = app.internship;
+    const co = i.co;
+    const ti = i.ti;
+    const matched = profile.skills.filter(s => i.rq.some(r => r.toLowerCase() === s.toLowerCase()));
+    const skillLine = matched.length > 0 ? matched.join(', ') : profile.skills.slice(0, 3).join(', ');
+
+    waInternship = i;
+    waProfile = profile;
+    const cleanPhone = (profile.phone || '').replace(/[^0-9]/g, '');
+
+    callSection.innerHTML = `
+        <div class="call-company-banner" style="background:linear-gradient(135deg,rgba(34,197,94,0.18),rgba(6,182,212,0.12));border:1px solid rgba(34,197,94,0.4);border-radius:var(--rad);padding:1.4rem;display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;box-shadow:0 8px 30px rgba(0,0,0,0.3)">
+            <div>
+                <div class="co-name" style="font-size:1.3rem;font-weight:800;color:#fff">🎉 ${co} — Finalized with AI Agent</div>
+                <div class="co-role" style="font-size:.95rem;color:var(--acl);margin-top:.2rem">${ti} &bull; ${app.score}% Match Score</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+                <div style="color:var(--grn2);font-weight:800;font-size:1.15rem">Call Scheduled!</div>
+                <div style="color:var(--t2);font-size:.82rem">${i.st} &bull; ${i.dur} months</div>
+            </div>
+        </div>
+        <div style="padding:1.5rem;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.25);border-radius:var(--rad2);margin-bottom:1.2rem">
+            <p style="font-size:1.05rem;color:var(--t1);margin-bottom:.4rem">🎊 <strong>Congratulations, ${profile.name}!</strong></p>
+            <p style="font-size:.92rem;color:var(--t2);line-height:1.6">The AI agent completed the recruitment screening with <strong>${co}</strong> HR. Your profile (${profile.stream}, CGPA ${profile.cgpa || 'N/A'}) was accepted. Review your briefing and send the full offer details to your WhatsApp below.</p>
+        </div>
+        <div class="wa-section" id="waSection" style="background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.35);border-radius:var(--rad2);padding:1.5rem;margin-bottom:1.5rem">
+            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem">
+                <span style="font-size:1.5rem">📱</span>
+                <h3 style="font-size:1.05rem;font-weight:800;color:#fff">WhatsApp Notification & Offer Summary</h3>
+            </div>
+            <p style="font-size:.88rem;color:var(--t2);margin-bottom:1.1rem">Full structured breakdown: Monthly Stipend, Work Hours, Work Mode (${i.rem ? 'Remote' : 'In-Office'}), Skills Checklist, and Next Steps.</p>
+            <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+                ${cleanPhone ? `
+                <button type="button" class="wa-btn" style="background:#25D366;color:#0b2e13;font-weight:700;padding:.75rem 1.2rem;border-radius:var(--rad3);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem" onclick="sendWhatsApp(curProfile, waInternship, '🎉 ' + waInternship.co + ' wants to finalize the ' + waInternship.ti + ' role.', true)">
+                    📲 Send to My WhatsApp (+91 ${cleanPhone.slice(-10)})
+                </button>
+                ` : ''}
+                <button type="button" class="wa-btn" style="background:rgba(37,211,102,0.18);color:#4ade80;border:1px solid rgba(37,211,102,0.4);font-weight:700;padding:.75rem 1.2rem;border-radius:var(--rad3);cursor:pointer;display:inline-flex;align-items:center;gap:.5rem" onclick="sendWhatsApp(curProfile, waInternship, '🎉 ' + waInternship.co + ' wants to finalize the ' + waInternship.ti + ' role.', false)">
+                    💬 Share to WhatsApp
+                </button>
+                <button type="button" class="btn-s" style="margin-top:0;padding:.75rem 1.2rem" onclick="copyWhatsAppMessage(curProfile, waInternship, '🎉 ' + waInternship.co + ' finalized!')">
+                    📋 Copy Summary
+                </button>
+            </div>
+            <div class="wa-msg-preview" id="waPreview" style="margin-top:1.2rem;background:rgba(0,0,0,0.4);padding:1.1rem;border-radius:var(--rad3);font-size:.85rem;line-height:1.7;border:1px solid var(--bdr);color:#e2e8f0;white-space:pre-wrap"></div>
+        </div>
+        <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .8rem;color:var(--t1)">📋 Pre-Call Preparation Checklist</h3>
+        <ul class="call-checklist">
+            <li><span class="ck">✅</span> Your resume and credentials have been submitted to ${co}</li>
+            <li><span class="ck">✅</span> Your skills (${skillLine}) match this role with ${app.score}% affinity</li>
+            <li><span class="ck">📖</span> Research ${co}'s products and recent news</li>
+            <li><span class="ck">📖</span> Review job scope: ${ti}</li>
+            <li><span class="ck">📖</span> Prepare 1-2 examples of projects using: ${skillLine}</li>
+            <li><span class="ck">📞</span> Keep your mobile phone charged and network clear</li>
+            <li><span class="ck">📄</span> Keep your college ID, resume PDF, and transcripts handy</li>
+        </ul>
+        <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .8rem;color:var(--t1)">💡 Key Interview Talking Points</h3>
+        <div style="padding:1.1rem;background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad2);font-size:.88rem;color:var(--t2);line-height:1.7">
+            <p><strong>Why ${co}?</strong> "I admire ${co}'s culture and impact in ${i.desc.split('.').pop().trim().toLowerCase() || 'innovation'}, and I am eager to contribute immediately."
+            <br><strong>My core strengths:</strong> "I have hands-on experience in ${skillLine} and have solved real-world problems with these tools."
+            <br><strong>What I bring:</strong> "As a dedicated ${profile.stream} student${profile.cgpa >= 7 ? ` with CGPA ${profile.cgpa}` : ''}, I bring fast learning agility, accountability, and strong team communication."</p>
+        </div>
+    `;
+    callSection.style.display = 'block';
+    setTimeout(() => showWhatsAppPreview(profile, i, '🎉 ' + i.co + ' wants to finalize the ' + i.ti + ' role.'), 100);
+}
+
+function showNotif(text) {
+    const badge = document.getElementById('notifBadge');
+    const txt = document.getElementById('notifText');
+    if (!badge || !txt) return;
+    txt.textContent = text;
+    badge.style.display = 'block';
+    setTimeout(() => badge.style.display = 'none', 6000);
+}
+
+function updateAgentStats() {
+    const applied = agentApps.filter(a => a.applied).length;
+    const responded = agentResponded.length;
+    const total = agentApps.length;
+    const el = document.getElementById('agentStats');
+    if (el) {
+        el.innerHTML = `
+            <div class="agent-stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
+            <div class="agent-stat"><div class="num">${applied}</div><div class="lbl">Applied</div></div>
+            <div class="agent-stat"><div class="num" style="color:var(--grn)">${responded}</div><div class="lbl">Responses</div></div>
+        `;
+    }
+}
+
+function stopAgent() {
+    if (agentTimer) clearInterval(agentTimer);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   WHATSAPP MESSAGE GENERATOR
+   ══════════════════════════════════════════════════════════════════════════════ */
+let waInternship = {}, waProfile = {};
+
+function generateWhatsAppMessage(profile, internship, response) {
+    const co = internship.co;
+    const ti = internship.ti;
+    const st = internship.st;
+    const dur = internship.dur;
+    const loc = internship.loc;
+    const rem = internship.rem;
+    const desc = internship.desc;
+    const rq = internship.rq;
+    const pf = internship.pf;
+    const cg = internship.cg;
+    const url = internship.url;
+    const matched = profile.skills.filter(s => rq.some(r => r.toLowerCase() === s.toLowerCase()));
+    const skillLine = matched.length > 0 ? matched.join(', ') : profile.skills.slice(0, 3).join(', ');
+
+    // Estimate work hours based on company type
+    const isStartup = ['Razorpay','Cred','Zerodha','Meesho','PhonePe','Swiggy','Zomato'].some(s => co.includes(s));
+    const isMNC = ['Google','Microsoft','Amazon','Goldman Sachs','McKinsey','BCG','Deloitte'].some(s => co.includes(s));
+    const workHours = isStartup ? '10 AM - 7 PM (flexible)' : isMNC ? '9:30 AM - 6:30 PM' : '9 AM - 6 PM';
+    const workDays = 'Monday to Friday';
+
+    const msg = `🎓 *internVerse — Job Details from ${co}*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ *CONGRATULATIONS, ${profile.name.toUpperCase()}!*
+
+${response || co} has responded positively for your application. Here are the complete details:
+
+📋 *JOB DETAILS*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 *Company:* ${co}
+💼 *Role:* ${ti}
+📄 *Description:* ${desc}
+
+💰 *SALARY & COMPENSATION*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+💵 *Stipend:* ${st}
+📊 *Estimated Annual (if PPO):* ${(parseInt(st.replace(/[^0-9]/g,''))*12/1000).toFixed(0)}L - ${(parseInt(st.replace(/[^0-9]/g,''))*15/1000).toFixed(0)}L per annum
+🎯 *Minimum CGPA Required:* ${cg}/10
+
+⏰ *WORK DETAILS*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 *Duration:* ${dur} months${dur >= 6 ? ' (eligible for PPO)' : ''}
+🕐 *Work Hours:* ${workHours}
+📆 *Work Days:* ${workDays}
+📍 *Location:* ${loc}${rem ? ' (Remote option available)' : ''}
+🏠 *Work Mode:* ${rem ? 'Remote / Hybrid' : 'In-Office'}
+
+🛠️ *REQUIRED SKILLS*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+${rq.map(r => `  ✅ ${r}${matched.map(m=>m.toLowerCase()).includes(r.toLowerCase()) ? ' ✓ (You have this!)' : ''}`).join('\n')}
+
+⭐ *PREFERRED SKILLS*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+${pf.map(p => `  📌 ${p}${matched.map(m=>m.toLowerCase()).includes(p.toLowerCase()) ? ' ✓ (You have this!)' : ''}`).join('\n')}
+
+👤 *YOUR PROFILE MATCH*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Skills: ${skillLine}
+✅ Stream: ${profile.stream}
+${profile.cgpa > 0 ? `✅ CGPA: ${profile.cgpa}/10` : ''}
+
+📞 *NEXT STEPS*
+━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣ Keep your phone ready for the call
+2️⃣ Research ${co}'s recent projects
+3️⃣ Review the job description: ${ti}
+4️⃣ Prepare examples using: ${skillLine}
+5️⃣ Keep resume, college ID & certificates handy
+6️⃣ Dress professionally (even for video calls)
+
+🔗 *APPLY NOW:* ${url}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+🤖 *Generated by internVerse*
+🎓 Smart internship matching for all streams
+📅 ${new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}`;
+
+    return msg;
+}
+
+function sendWhatsApp(profile, internship, response, targetUserPhone = false) {
+    waInternship = internship;
+    waProfile = profile;
+    const msg = generateWhatsAppMessage(profile, internship, response);
+    const encoded = encodeURIComponent(msg);
+    let url = `https://wa.me/?text=${encoded}`;
+    if (targetUserPhone && profile?.phone) {
+        let clean = String(profile.phone).replace(/[^0-9]/g, '');
+        if (clean.length === 10) clean = '91' + clean;
+        if (clean.length >= 10) url = `https://wa.me/${clean}?text=${encoded}`;
+    }
+    window.open(url, '_blank');
+    showToast('📱 WhatsApp message opened!');
+}
+
+function copyWhatsAppMessage(profile, internship, response) {
+    const msg = generateWhatsAppMessage(profile, internship, response);
+    navigator.clipboard.writeText(msg).then(() => {
+        showToast('📋 Copied full WhatsApp offer message!');
+    }).catch(() => {
+        showToast('Please copy message manually');
+    });
+}
+
+function showWhatsAppPreview(profile, internship, response) {
+    const msg = generateWhatsAppMessage(profile, internship, response);
+    const preview = document.getElementById('waPreview');
+    if (preview) {
+        preview.innerHTML = msg.replace(/\n/g, '<br>').replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+        preview.style.display = 'block';
+    }
+    const section = document.getElementById('waSection');
+    if (section) section.style.display = 'block';
+}
+
+syncInternshipsFromSupabase(DB).then(() => {
+    const cnt = document.getElementById('heroIntCount');
+    if (cnt) cnt.textContent = String(DB.length);
+    populateWebBrowseStreams();
+    renderWebBrowse();
+});
+
+function populateWebBrowseStreams() {
+    const sel = document.getElementById('webBrowseStream');
+    if (!sel || sel.options.length > 1) return;
+    const streams = [...new Set(DB.flatMap(i => i.el || []))].sort();
+    streams.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s; o.textContent = s;
+        sel.appendChild(o);
+    });
+}
+
+function renderWebBrowse() {
+    const q = (document.getElementById('webBrowseSearch')?.value || '').trim().toLowerCase();
+    const st = (document.getElementById('webBrowseStream')?.value || '').toLowerCase();
+    const rem = document.getElementById('webBrowseRemote')?.value || 'all';
+    const filtered = DB.filter(i => {
+        if (rem === 'remote' && !i.rem) return false;
+        if (st && !(i.el || []).some(e => e.toLowerCase() === st)) return false;
+        if (q) {
+            const hay = [i.co, i.ti, i.loc, i.desc, ...(i.el || []), ...(i.rq || []), ...(i.pf || [])].join(' ').toLowerCase();
+            if (!hay.includes(q)) return false;
+        }
+        return true;
+    });
+    const countEl = document.getElementById('webBrowseCount');
+    if (countEl) countEl.textContent = `Showing ${Math.min(filtered.length, 24)} of ${filtered.length} matching roles (${DB.length} total)`;
+    const grid = document.getElementById('webBrowseGrid');
+    if (!grid) return;
+    grid.innerHTML = filtered.slice(0, 24).map(i => `
+        <div class="b-card">
+            <div class="b-card-co">${i.co}</div>
+            <div class="b-card-ti">${i.ti}</div>
+            <div class="b-card-meta">📍 ${i.loc}${i.rem ? ' (Remote)' : ''} • ⏱ ${i.dur}mo • 💰 ${i.st}</div>
+            <div class="b-card-desc">${i.desc}</div>
+            <div class="b-card-act">
+                <a href="${i.url}" target="_blank" class="b-btn primary" onclick="webTrackApp(${Number(i.id) || 0}, '${i.co.replace(/'/g,"\\'")}', '${i.ti.replace(/'/g,"\\'")}', 'applied', '${i.url}', '${i.st}', ${i.dur}, '${i.loc}', ${Boolean(i.rem)})">Apply ↗</a>
+                <button type="button" class="b-btn" onclick="webTrackApp(${Number(i.id) || 0}, '${i.co.replace(/'/g,"\\'")}', '${i.ti.replace(/'/g,"\\'")}', 'saved', '${i.url}', '${i.st}', ${i.dur}, '${i.loc}', ${Boolean(i.rem)})">🔖 Save</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function webTrackApp(id, company, role, status, url, stipend, duration, location, remote) {
+    const sess = await window.IVSupabase.getAuthSession();
+    if (!sess?.user) {
+        if (status === 'saved') {
+            openWebAuthModal();
+            showToast('Sign in with Google or Mobile OTP to save internships!');
+        }
+        return;
+    }
+    await window.IVSupabase.saveApplication({ internshipId: id, company, role, status, url, stipend, duration, location, remote });
+    showToast(status === 'saved' ? '🔖 Saved to your Supabase account!' : '✅ Tracked as Applied!');
+}
+
+/* ── Web Auth Modal (Google, Mobile OTP, Email) ── */
+function ensureWebAuthModal() {
+    if (document.getElementById('webAuthModal')) return;
+    const div = document.createElement('div');
+    div.className = 'modal-overlay';
+    div.id = 'webAuthModal';
+    div.innerHTML = `
+    <div class="modal" style="max-width:440px">
+        <div class="modal-head">
+            <h3 style="display:flex;align-items:center;gap:.5rem"><img src="logo.png" alt="internVerse" class="brand-logo-img" style="width:24px;height:24px"> Candidate Account & Sign In</h3>
+            <button class="modal-close" onclick="closeWebAuthModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="web-msg err" id="webAuthErr"></div>
+            <div class="web-msg ok" id="webAuthOk"></div>
+            <button type="button" class="btn-google-w" onclick="webGoogleLogin()">
+                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Continue with Google
+            </button>
+            <div style="text-align:center;color:var(--t3);font-size:.75rem;margin:.9rem 0">OR CONTINUE WITH</div>
+            <div class="auth-tabs-w">
+                <button type="button" class="auth-tab-w active" id="wTabOtp" onclick="switchWebAuthTab('otp')">📱 Mobile OTP</button>
+                <button type="button" class="auth-tab-w" id="wTabEmail" onclick="switchWebAuthTab('email')">✉️ Email</button>
+            </div>
+            <div id="wPaneOtp">
+                <form onsubmit="event.preventDefault(); if(document.getElementById('wOtpVerifyBox').style.display==='block') webVerifyOtp(); else webSendOtp();">
+                    <div class="fg"><label>Full Name (for new candidates)</label><input type="text" id="wOtpName" placeholder="Your full name"></div>
+                    <div class="fg"><label>Mobile Number (with country code)</label><input type="tel" id="wOtpPhone" placeholder="+91 9876543210" required></div>
+                    <div id="wOtpVerifyBox" style="display:none;margin-top:.6rem">
+                        <div class="fg"><label>6-Digit SMS OTP</label><input type="text" id="wOtpCode" maxlength="6" placeholder="123456" pattern="[0-9]{6}"></div>
+                        <button type="submit" class="btn-p" style="width:100%">Verify OTP & Enter Portal</button>
+                        <div style="display:flex;justify-content:space-between;margin-top:.6rem">
+                            <button type="button" class="b-btn" style="font-size:.75rem" onclick="webChangePhone()">← Change Number</button>
+                            <button type="button" class="b-btn" style="font-size:.75rem" onclick="webSendOtp()">Resend OTP</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-p" id="wSendOtpBtn" style="width:100%">Send Verification OTP</button>
+                </form>
+            </div>
+            <div id="wPaneEmail" style="display:none">
+                <div class="sub-tabs-w">
+                    <button type="button" class="sub-tab-w active" id="wEmailSubLogin" onclick="switchWebEmailMode('login')">Sign In</button>
+                    <button type="button" class="sub-tab-w" id="wEmailSubSignup" onclick="switchWebEmailMode('signup')">Create Account</button>
+                </div>
+                <form id="wEmailForm" onsubmit="event.preventDefault(); if(window._webEmailMode==='signup') webEmailSignup(); else webEmailLogin();">
+                    <div class="fg" id="wEmailNameBox" style="display:none"><label>Full Name</label><input type="text" id="wEmailName" placeholder="Your full name"></div>
+                    <div class="fg"><label>Email Address</label><input type="email" id="wEmailAddr" placeholder="candidate@example.com" required></div>
+                    <div class="fg">
+                        <label>Password</label>
+                        <div class="pass-wrap">
+                            <input type="password" id="wEmailPass" placeholder="Min 6 characters" required>
+                            <button type="button" class="pass-toggle" onclick="toggleWebPassVisibility('wEmailPass')" title="Toggle password view">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-p" id="wEmailSubmitBtn" style="width:100%">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>`;
+    document.body.appendChild(div);
+}
+
+window._webEmailMode = 'login';
+function switchWebEmailMode(mode) {
+    window._webEmailMode = mode;
+    setWebAuthMsg('err', '');
+    setWebAuthMsg('ok', '');
+    const isSignup = mode === 'signup';
+    const subL = document.getElementById('wEmailSubLogin');
+    const subS = document.getElementById('wEmailSubSignup');
+    if (subL) subL.classList.toggle('active', !isSignup);
+    if (subS) subS.classList.toggle('active', isSignup);
+    const nb = document.getElementById('wEmailNameBox');
+    if (nb) nb.style.display = isSignup ? 'block' : 'none';
+    const btn = document.getElementById('wEmailSubmitBtn');
+    if (btn) btn.textContent = isSignup ? 'Create Account' : 'Sign In';
+}
+function toggleWebPassVisibility(id) {
+    const el = document.getElementById(id || 'wEmailPass');
+    if (!el) return;
+    el.type = el.type === 'password' ? 'text' : 'password';
+}
+function webChangePhone() {
+    const vb = document.getElementById('wOtpVerifyBox');
+    if (vb) vb.style.display = 'none';
+    const sb = document.getElementById('wSendOtpBtn');
+    if (sb) sb.style.display = 'block';
+    setWebAuthMsg('err', '');
+    setWebAuthMsg('ok', '');
+}
+
+function openWebAuthModal() { ensureWebAuthModal(); document.getElementById('webAuthModal').classList.add('active'); }
+function closeWebAuthModal() { const m = document.getElementById('webAuthModal'); if (m) m.classList.remove('active'); }
+function switchWebAuthTab(tab) {
+    setWebAuthMsg('err', '');
+    setWebAuthMsg('ok', '');
+    document.getElementById('wTabOtp').classList.toggle('active', tab === 'otp');
+    document.getElementById('wTabEmail').classList.toggle('active', tab === 'email');
+    document.getElementById('wPaneOtp').style.display = tab === 'otp' ? 'block' : 'none';
+    document.getElementById('wPaneEmail').style.display = tab === 'email' ? 'block' : 'none';
+}
+function setWebAuthMsg(type, msg) {
+    const e = document.getElementById('webAuthErr'), o = document.getElementById('webAuthOk');
+    if (e) e.style.display = 'none';
+    if (o) o.style.display = 'none';
+    if (!msg) return;
+    const el = type === 'err' ? e : o;
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+async function webGoogleLogin() {
+    const res = await window.IVSupabase.signInWithGoogle();
+    if (res?.error) setWebAuthMsg('err', res.error);
+}
+async function webSendOtp() {
+    setWebAuthMsg('err', '');
+    const phoneInput = document.getElementById('wOtpPhone');
+    if (!phoneInput || !phoneInput.value.trim()) {
+        setWebAuthMsg('err', 'Please enter your mobile number.');
+        return;
+    }
+    const res = await window.IVSupabase.sendPhoneOtp(phoneInput.value);
+    if (res?.error) { setWebAuthMsg('err', res.error); return; }
+    document.getElementById('wOtpPhone').value = res.phone;
+    document.getElementById('wSendOtpBtn').style.display = 'none';
+    document.getElementById('wOtpVerifyBox').style.display = 'block';
+    setWebAuthMsg('ok', 'OTP sent to ' + res.phone);
+}
+async function webVerifyOtp() {
+    setWebAuthMsg('err', '');
+    const phone = document.getElementById('wOtpPhone').value;
+    const code = document.getElementById('wOtpCode').value;
+    if (!code || code.trim().length < 6) {
+        setWebAuthMsg('err', 'Please enter the 6-digit OTP received via SMS.');
+        return;
+    }
+    const res = await window.IVSupabase.verifyPhoneOtp(phone, code);
+    if (res?.error) { setWebAuthMsg('err', res.error); return; }
+    const name = document.getElementById('wOtpName').value.trim();
+    if (name) await window.IVSupabase.saveProfile({ name, phone });
+    closeWebAuthModal();
+    await refreshWebAuthState();
+    showToast('✅ Signed in with Mobile OTP!');
+}
+async function webEmailLogin() {
+    setWebAuthMsg('err', '');
+    const email = document.getElementById('wEmailAddr').value.trim();
+    const pass = document.getElementById('wEmailPass').value;
+    if (!email || !pass) {
+        setWebAuthMsg('err', 'Please enter your email and password.');
+        return;
+    }
+    const res = await window.IVSupabase.signInWithEmail(email, pass);
+    if (res?.error) { setWebAuthMsg('err', res.error); return; }
+    closeWebAuthModal();
+    await refreshWebAuthState();
+    showToast('✅ Signed in!');
+}
+async function webEmailSignup() {
+    setWebAuthMsg('err', '');
+    const name = document.getElementById('wEmailName').value.trim() || 'Student';
+    const email = document.getElementById('wEmailAddr').value.trim();
+    const password = document.getElementById('wEmailPass').value;
+    if (!email || !password) {
+        setWebAuthMsg('err', 'Please enter your email and password.');
+        return;
+    }
+    if (password.length < 6) {
+        setWebAuthMsg('err', 'Password must be at least 6 characters.');
+        return;
+    }
+    const res = await window.IVSupabase.signUpWithEmail({ name, email, password });
+    if (res?.error) { setWebAuthMsg('err', res.error); return; }
+    if (res.data?.session) {
+        closeWebAuthModal();
+        await refreshWebAuthState();
+        showToast('✅ Account created!');
+    } else {
+        setWebAuthMsg('ok', 'Account created! Check your email to confirm, then sign in.');
+    }
+}
+async function webSignOut() {
+    await window.IVSupabase.signOut();
+    await refreshWebAuthState();
+    showToast('Signed out');
+}
+async function refreshWebAuthState() {
+    const box = document.getElementById('webNavAuth');
+    if (!box) return;
+    const sess = await window.IVSupabase.getAuthSession();
+    if (!sess?.user) {
+        box.innerHTML = `<button type="button" class="btn-nav primary" onclick="openWebAuthModal()">Sign In</button><a href="app.html" class="btn-nav">Candidate Portal</a>`;
+        return;
+    }
+    const u = sess.user;
+    const prof = await window.IVSupabase.loadProfile();
+    const displayName = prof?.name || u.user_metadata?.full_name || u.email || u.phone || 'Student';
+    const av = prof?.avatar_url || u.user_metadata?.avatar_url || u.user_metadata?.picture || '';
+    box.innerHTML = `
+        <div class="user-chip"><div class="user-chip-av">${av ? `<img src="${av}" alt="">` : displayName.charAt(0).toUpperCase()}</div><span>${displayName}</span></div>
+        <a href="app.html" class="btn-nav primary">Candidate Portal</a>
+        <button type="button" class="btn-nav" onclick="webSignOut()">Logout</button>
+    `;
+    // Auto-fill form fields if empty
+    if (document.getElementById('name') && !document.getElementById('name').value) document.getElementById('name').value = displayName;
+    if (document.getElementById('email') && !document.getElementById('email').value && (prof?.email || u.email)) document.getElementById('email').value = prof?.email || u.email;
+    if (document.getElementById('phone') && !document.getElementById('phone').value && (prof?.phone || u.phone)) document.getElementById('phone').value = prof?.phone || u.phone;
+    if (prof?.stream && document.getElementById('stream')) {
+        document.getElementById('stream').value = prof.stream;
+        document.getElementById('stream').dispatchEvent(new Event('change'));
+    }
+    if (prof?.college && document.getElementById('college')) document.getElementById('college').value = prof.college;
+    if (prof?.cgpa && document.getElementById('cgpa')) document.getElementById('cgpa').value = prof.cgpa;
+    if (Array.isArray(prof?.skills) && prof.skills.length && selSkills.length === 0) {
+        selSkills = [...prof.skills];
+        renderSk();
+    }
+}
+
+populateWebBrowseStreams();
+renderWebBrowse();
+refreshWebAuthState();
+window.IVSupabase.onAuthStateChange(() => refreshWebAuthState());
+console.log('🎓 internVerse loaded — '+DB.length+' internships');
+
+/* ══════════════════════════════════════════════════════
+   3D ANIMATION, THREE.JS GALAXY, CARD TILT & MOTION ENGINE
+   ══════════════════════════════════════════════════════ */
+// 1. Ambient Mouse Glow
+(function initCursorGlow(){
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const glow = document.createElement('div');
+    glow.className = 'cursor-glow';
+    document.body.appendChild(glow);
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let curX = mouseX, curY = mouseY;
+    window.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }, { passive: true });
+    function renderGlow() {
+        curX += (mouseX - curX) * 0.15;
+        curY += (mouseY - curY) * 0.15;
+        glow.style.left = `${curX}px`;
+        glow.style.top = `${curY}px`;
+        requestAnimationFrame(renderGlow);
+    }
+    requestAnimationFrame(renderGlow);
+})();
+
+// 2. Interactive Three.js 3D Cosmic Gyro & Starfield in Hero
+(function initThreeJSHero(){
+    if (typeof THREE === 'undefined') return;
+    const canvas = document.getElementById('hero3DCanvas');
+    if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const hero = document.getElementById('hero');
+    let width = hero.clientWidth || window.innerWidth;
+    let height = hero.clientHeight || window.innerHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+    camera.position.z = 24;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Starfield particles
+    const starCount = window.innerWidth < 768 ? 450 : 950;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
+
+    const c1 = new THREE.Color(0x818cf8);
+    const c2 = new THREE.Color(0x06b6d4);
+    const c3 = new THREE.Color(0xec4899);
+
+    for (let i = 0; i < starCount; i++) {
+        starPos[i * 3] = (Math.random() - 0.5) * 60;
+        starPos[i * 3 + 1] = (Math.random() - 0.5) * 45;
+        starPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+
+        const mixed = Math.random() < 0.5 ? c1.clone().lerp(c2, Math.random()) : c2.clone().lerp(c3, Math.random());
+        starColors[i * 3] = mixed.r;
+        starColors[i * 3 + 1] = mixed.g;
+        starColors[i * 3 + 2] = mixed.b;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+    const starMat = new THREE.PointsMaterial({
+        size: 0.18,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.85
+    });
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // Central 3D Gyroscopic Rings Group
+    const gyroGroup = new THREE.Group();
+    scene.add(gyroGroup);
+
+    // Inner wireframe sphere core
+    const coreGeo = new THREE.IcosahedronGeometry(4.2, 2);
+    const coreMat = new THREE.MeshBasicMaterial({
+        color: 0x6366f1,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.22
+    });
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    gyroGroup.add(coreMesh);
+
+    // Outer Orbit Ring 1
+    const ring1Geo = new THREE.TorusGeometry(7.2, 0.08, 16, 100);
+    const ring1Mat = new THREE.MeshBasicMaterial({
+        color: 0x06b6d4,
+        transparent: true,
+        opacity: 0.5
+    });
+    const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+    ring1.rotation.x = Math.PI / 3;
+    gyroGroup.add(ring1);
+
+    // Outer Orbit Ring 2
+    const ring2Geo = new THREE.TorusGeometry(9.0, 0.06, 16, 100);
+    const ring2Mat = new THREE.MeshBasicMaterial({
+        color: 0xec4899,
+        transparent: true,
+        opacity: 0.35
+    });
+    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+    ring2.rotation.y = Math.PI / 4;
+    gyroGroup.add(ring2);
+
+    // Satellite Particle on Ring 1
+    const satGeo = new THREE.SphereGeometry(0.28, 16, 16);
+    const satMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const satMesh = new THREE.Mesh(satGeo, satMat);
+    gyroGroup.add(satMesh);
+
+    let mouseTargetX = 0, mouseTargetY = 0;
+    let mouseCurX = 0, mouseCurY = 0;
+
+    window.addEventListener('mousemove', e => {
+        const rect = hero.getBoundingClientRect();
+        if (e.clientY <= rect.bottom) {
+            mouseTargetX = ((e.clientX / window.innerWidth) - 0.5) * 2;
+            mouseTargetY = ((e.clientY / window.innerHeight) - 0.5) * 2;
+        }
+    }, { passive: true });
+
+    let isHeroVisible = true;
+    const heroObserver = new IntersectionObserver(entries => {
+        isHeroVisible = entries[0].isIntersecting;
+    }, { threshold: 0.1 });
+    heroObserver.observe(hero);
+
+    let satAngle = 0;
+    let clock = 0;
+
+    function animateThree() {
+        requestAnimationFrame(animateThree);
+        if (!isHeroVisible) return;
+
+        clock += 0.01;
+        satAngle += 0.025;
+
+        // Smooth mouse parallax lerp
+        mouseCurX += (mouseTargetX - mouseCurX) * 0.06;
+        mouseCurY += (mouseTargetY - mouseCurY) * 0.06;
+
+        // Gyro rotations
+        coreMesh.rotation.x += 0.003;
+        coreMesh.rotation.y += 0.005;
+
+        ring1.rotation.z += 0.006;
+        ring2.rotation.x -= 0.004;
+
+        // Satellite position along Ring 1
+        satMesh.position.x = Math.cos(satAngle) * 7.2;
+        satMesh.position.y = Math.sin(satAngle) * 7.2 * Math.cos(Math.PI / 3);
+        satMesh.position.z = Math.sin(satAngle) * 7.2 * Math.sin(Math.PI / 3);
+
+        // Starfield subtle rotation
+        starField.rotation.y = clock * 0.02;
+        starField.rotation.x = clock * 0.01;
+
+        // Camera gentle tracking
+        camera.position.x = mouseCurX * 3.5;
+        camera.position.y = -mouseCurY * 2.5;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+    }
+    animateThree();
+
+    window.addEventListener('resize', () => {
+        width = hero.clientWidth || window.innerWidth;
+        height = hero.clientHeight || window.innerHeight;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+    });
+})();
+
+// 3. 3D Card Tilt with Specular Reflection
+function init3DTiltCards() {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const cards = document.querySelectorAll('.card-3d-tilt, .glass, .b-card, .mc');
+    cards.forEach(card => {
+        if (card.dataset.tiltBound) return;
+        card.dataset.tiltBound = 'true';
+        card.classList.add('card-3d-tilt');
+
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
+
+            const dx = (x - cx) / cx;
+            const dy = (y - cy) / cy;
+
+            card.style.transform = `perspective(1000px) rotateX(${-dy * 7}deg) rotateY(${dx * 7}deg) translateZ(6px)`;
+            card.style.setProperty('--shine-x', `${(x / rect.width) * 100}%`);
+            card.style.setProperty('--shine-y', `${(y / rect.height) * 100}%`);
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+        });
+    });
+}
+window.addEventListener('DOMContentLoaded', init3DTiltCards);
+setTimeout(init3DTiltCards, 600);
+
+// 4. Scroll Reveal Engine
+(function initScrollReveal(){
+    const targets = document.querySelectorAll('.reveal-on-scroll, .sec-hdr, .form-sec, .browse-sec');
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-revealed');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    targets.forEach(t => observer.observe(t));
+})();
+
+// 5. Stat Counter Animations
+(function initStatCounters(){
+    const stats = document.querySelectorAll('.stat-n[data-target]');
+    if (!stats.length) return;
+    let started = false;
+    const obs = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !started) {
+            started = true;
+            stats.forEach(counter => {
+                const target = parseInt(counter.dataset.target, 10) || 0;
+                let current = 0;
+                const duration = 1600;
+                const stepTime = 25;
+                const steps = duration / stepTime;
+                const inc = target / steps;
+                const timer = setInterval(() => {
+                    current += inc;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(current) + '+';
+                }, stepTime);
+            });
+        }
+    }, { threshold: 0.3 });
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) obs.observe(heroStats);
+})();
+
+// 6. Interactive Button Click Ripple
+document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-p, .btn-s, .btn-nav, .b-btn');
+    if (!btn) return;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+});
+</script>
+</body>
+</html>
